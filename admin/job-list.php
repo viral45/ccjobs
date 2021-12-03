@@ -8,6 +8,7 @@ if(!isset($_SESSION['logged_in'])){
 
 include("config.php"); 
 
+
 if (isset($_REQUEST["page"])) { $page  = $_REQUEST["page"]; } else { $page=1; };  
 
 //search variables
@@ -20,6 +21,18 @@ if (!empty($_REQUEST['searchJobNo'])){
 if (!empty($_REQUEST['searchAddress'])){	
 	$where .= " AND JobAddress LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchAddress']) . "%'";
 }
+
+if(!empty($_REQUEST['projectId']))
+{
+    $where .= " AND ProjectID = " . $_REQUEST['projectId'];
+}
+ 
+ $orderBy = "ORDER BY ProjectID ASC, JobID ASC";
+
+ if($_REQUEST["type"] != null && $_REQUEST["sort"] != null)
+ {
+    $orderBy = "ORDER BY ProjectID ASC, ". $_REQUEST['type']." ".$_REQUEST['sort'] ;
+ }   
 
 ?>
 
@@ -44,10 +57,31 @@ if (!empty($_REQUEST['searchAddress'])){
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th nowrap>Job No.</th>
-                    <th>Address</th>
-                    <th>Date Entered</th>
-                    <th>Measure Date</th>
+                    <th nowrap>
+                        Job No. 
+                        <span class="sort-icon">
+                            <i class="fa fa-sort-asc" id="JobIDASC" data-name="JobID" data-sort="ASC" style="color:red;" aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="JobIDDESC" data-name="JobID" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
+                    <th>Address
+                        <span class="sort-icon"> 
+                            <i class="fa fa-sort-asc" id="JobAddressASC" data-name="JobAddress" data-sort="ASC"  aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="JobAddressDESC" data-name="JobAddress" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
+                    <th>Date Entered
+                        <span class="sort-icon"> 
+                            <i class="fa fa-sort-asc" id="DateEnteredASC" data-name="DateEntered" data-sort="ASC"  aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="DateEnteredDESC" data-name="DateEntered" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
+                    <th>Measure Date
+                        <span class="sort-icon"> 
+                            <i class="fa fa-sort-asc" id="DateMeasureASC" data-name="DateMeasure" data-sort="ASC"  aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="DateMeasureDESC" data-name="DateMeasure" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
                     <th style="width:40px;"></th>
                 </tr>
             </thead>
@@ -55,7 +89,7 @@ if (!empty($_REQUEST['searchAddress'])){
                 
                 <?php 
                    
-                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure FROM tblJob $where ORDER BY ProjectID LIMIT $start_from, $recordsperpage";
+                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
 
                 $result = $mysqli->query($query);
                 $getProjectName = '';
@@ -130,6 +164,7 @@ if ($total_pages > 1)
         currentPage : <?php echo $page;?>,
         hrefTextPrefix : 'jobs.php?page='
     });
+
 </script>
 
 <?php

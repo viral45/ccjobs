@@ -17,7 +17,7 @@ if (isset($_POST['action'])){
 		$discription = $_POST['inputprojectDiscription'];
 		$dateentered = date("Y-m-d H:i:s");
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tblProject (ProjectName,Discription,DateEntered) VALUES (?,?,?)");
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblproject (ProjectName,Discription,DateEntered) VALUES (?,?,?)");
 		$insert_stmt->bind_param('sss', $name,$discription,$dateentered); 
 		$insert_stmt->execute();
 				
@@ -45,7 +45,7 @@ if (isset($_POST['action'])){
 		$discription = $_POST['inputprojectDiscription'];
 
 
-		$update_stmt = $mysqli->prepare("UPDATE tblProject SET ProjectName = ?, Discription = ? WHERE ProjectID = ?"); 
+		$update_stmt = $mysqli->prepare("UPDATE tblproject SET ProjectName = ?, Discription = ? WHERE ProjectID = ?"); 
 		$update_stmt->bind_param('ssi', $name, $discription, $projectid); 
 		$update_stmt->execute();
 		
