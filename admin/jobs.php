@@ -18,6 +18,8 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Jobs</span>
+      <a type="button" href="projects.php" id="add-btn-project" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Project</a>
+      <br>
       <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
       
     </h1>

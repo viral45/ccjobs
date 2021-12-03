@@ -54,10 +54,37 @@ if (!empty($_REQUEST['searchAddress'])){
             <tbody>
                 
                 <?php 
-                $query = "SELECT JobID, JobAddress, DateEntered, DateMeasure FROM tblJob $where ORDER BY JobID LIMIT $start_from, $recordsperpage";
-			    $result = $mysqli->query($query);
-                
+                   
+                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure FROM tblJob $where ORDER BY ProjectID LIMIT $start_from, $recordsperpage";
+
+                $result = $mysqli->query($query);
+                $getProjectName = '';
                 while($row = $result->fetch_array()){
+
+                    $ProjectName = '';
+
+                    if($row['ProjectID'] != '')
+                    {
+                        
+                        if ($stmt = $mysqli->prepare("SELECT ProjectName FROM tblproject WHERE ProjectID = ? LIMIT 1")) { 
+                            $stmt->bind_param('i', $row['ProjectID']);
+                            $stmt->execute();   
+                            $stmt->store_result();
+                            $stmt->bind_result($ProjectName);
+                            $stmt->fetch();
+                        }
+                    }
+
+                    if($getProjectName != $ProjectName)
+                    {
+                        $getProjectName = $ProjectName;
+                        ?>
+
+                        <tr>
+                            <td colspan="5" class="text-center "><h5><?php echo $getProjectName; ?></h5></td>
+                        </tr>
+                    <?php
+                    }
                 ?>
                     <tr>
                         <td ><?php echo $row['JobID'] ?></td>

@@ -10,15 +10,16 @@ include("config.php");
 
 if (isset($_POST['action']))
 {
+
 	if ($_POST['action'] == "edit"){
 		
 		$jobid = isset($_POST['jobid']) ? $_POST['jobid'] : die('ERROR: Job ID not found.');
 
-		if ($stmt = $mysqli->prepare("SELECT JobID, JobAddress, Builder, DateMeasure, MeasureBy FROM tblJob WHERE JobID = ? LIMIT 1")) { 
+		if ($stmt = $mysqli->prepare("SELECT JobID,ProjectID, JobAddress, Builder, DateMeasure, MeasureBy FROM tblJob WHERE JobID = ? LIMIT 1")) { 
 			$stmt->bind_param('i', $jobid);
 			$stmt->execute();
 			$stmt->store_result();
-			$stmt->bind_result($formjobid, $formjobaddress, $formbuilder, $formdatemeasure, $formmeasureby);
+			$stmt->bind_result($formjobid,$projectId, $formjobaddress, $formbuilder, $formdatemeasure, $formmeasureby);
 			$stmt->fetch();
 		}
 	}
@@ -28,12 +29,32 @@ if (isset($_POST['action']))
 <form id='job-form' action='#' method='post'>
     <input type="hidden" id="action" name="action" value="<?php if (isset($_POST['action'])) { echo $_POST['action']; } ?>">
     <input type="hidden" id="jobid" name="jobid" value="<?php if (isset($_POST['jobid'])) { echo $_POST['jobid']; } ?>">
+
+    <div class="form-group">
+	  <label for="projectId">Select Project:</label>
+	  <select class="form-control" id="projectId" name="projectId">
+	    <option value="">None</option>
+			<?php
+				$query = "SELECT ProjectID, ProjectName FROM tblproject  ORDER BY ProjectName";
+				$result = $mysqli->query($query);			
+
+				while($row = $result->fetch_array())
+				{	
+					if (isset($projectId))
+						$selected = ($row['ProjectID'] == $projectId) ? " SELECTED" : ""; 	
+					else
+						$selected = "";
+
+					echo "<option value=" . $row['ProjectID'] . " $selected>" . $row['ProjectName'] . "</option>";
+				}
+			?>
+	  </select>
+	</div>
     
     <div class="form-group">
         <label for="inputJobAddress">Address</label>
         <input type="text" class="form-control" id="inputJobAddress" name="inputJobAddress" placeholder="Address" required value="<?php if (isset($formjobaddress)) { echo htmlspecialchars($formjobaddress, ENT_QUOTES); } ?>">
     </div>
-
 	<div class="form-group">
         <label for="inputBuilder">Builder</label>
         <input type="text" class="form-control" id="inputBuilder" name="inputBuilder" placeholder="Builder" value="<?php if (isset($formbuilder)) { echo htmlspecialchars($formbuilder, ENT_QUOTES); } ?>">
