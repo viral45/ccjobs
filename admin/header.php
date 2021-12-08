@@ -62,7 +62,7 @@
             <li <?php echo ($page == "welcome") ? "class='active'" : ""; ?>><a href="index.php">Home</a></li>
 
             <li <?php echo ($page == "jobs") ? "class='active'" : ""; ?>><a href="jobs.php">Jobs</a></li>
-            
+
             <li class="dropdown <?php echo ($page == "schedule") ? "active" : ""; ?>" >
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Schedule<span class="caret"></span></a>
               <ul class="dropdown-menu dropdown-menu-left">

@@ -107,6 +107,8 @@
 								?>
 
 								<br>
+								<div class="row">
+									<div class="col-md-4">
 								<?php	
 
 									$query = "SELECT tblJobTaskDraft.TaskID, tblTask.Weight FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $formjobid";
@@ -117,8 +119,11 @@
 									while($task = $result->fetch_array()) {
 										$taskarray[] = $task['TaskID'];
 										$weight -= $task['Weight'];
+										
 									}
-								
+
+
+									
 									if ($weight > 0){
 								?>
 										<button class="start-draft-btn btn btn-success btn-lg" type="button" <?php if (empty($_SESSION['is_draftsman'])){echo "disabled='disabled'";}?>>Measured</button>
@@ -135,7 +140,65 @@
 								<btn class="btn btn-lg btn-info plans-btn">Plans</btn>
 					
 								<a href="index.php" class="btn btn-warning btn-lg">Home</a>
+								<i class="fa fa-2x btn btn-info fa-plus-circle" aria-hidden="true" data-toggle="modal" data-target="#newRoom"></i>
+								</div>
+								<?php
+									$remove_null = array_filter($taskarray, fn($value) => !is_null($value) && $value !== '');
 
+									$taskarray_data = implode(',', $remove_null); 
+
+									
+									$taskData_query = "SELECT * FROM tbltask WHERE TaskID NOT IN ($taskarray_data) And TaskID != 1";
+									$task_result = mysqli_query($mysqli, $taskData_query);
+									$task_result_list = mysqli_num_rows($task_result);
+
+									if($task_result_list > 0){
+
+								?>
+									
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Add Room</label>
+										  <select class="form-control" id="roomList">
+										  	 <option value="">select</option>
+										    <?php
+
+											    while($row = mysqli_fetch_assoc($task_result)) 
+											    {
+											    	echo '<option value="'.$row['TaskID'].'">'.$row['TaskName'].'</option>';
+											    }
+										    ?>
+										  </select>
+										</div>
+									</div>
+									<div class="col-md-1">
+										<btn class="btn btn-lg create-room btn-success">submit</btn>
+									</div>
+									<?php } ?>
+									<?php
+
+									$query = "SELECT tblJobTaskDraft.*, tblTask.TaskName FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $jobid ORDER BY tblJobTaskDraft.TaskID";
+									$result = $mysqli->query($query);
+
+									$signOff = 0;
+									while($get_is_off = $result->fetch_array()) {
+										
+										if($get_is_off['is_off'] == 0)
+										{
+											$signOff = 1;
+										}
+									}
+
+
+									if ($_SESSION['is_JobApprove'] == 1 && $signOff == 1){ ?>
+
+									<div class="col-md-3">
+										<btn class="btn btn-lg btn-info sing-off-all-btn text-right">Sing Off All</btn>
+									</div>
+									
+								<?php } ?>
+
+								</div>
 								<br><br>
 								<div class="collapse" id="materials">
 									<div class="well">
@@ -334,6 +397,11 @@
 														<button class="complete-draft-btn btn btn-success btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sent To CNC</button>
 											<?php } ?>
 
+											<?php
+													if ($_SESSION['is_JobApprove'] == 1 && $row['is_off'] == 0 && empty($row['DateCompleted'])){
+											?>
+														<button class="sing-off-btn btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sing Off</button>
+											<?php } ?>	
 											<br><br>
 											<div class="collapse" id="checklistdraft<?php echo $row['TaskID']?>">
 												<div class="well">
@@ -1041,6 +1109,41 @@
 	</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 
+
+	<!-- Button to Open the Modal -->
+
+<!-- The Modal -->
+<div class="modal" id="newRoom">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title"> New Room Add</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form id='task-form' action='#' method='post'>
+        	<input type="hidden" id="action" name="action" value="taskInsert">
+        		<div class="form-group">
+						  <label for="usr">Task Name</label>
+						  <input type="text" class="form-control" name="task_name">
+						</div>
+						<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
     <script src="js/jquery-1.11.3.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
@@ -1548,6 +1651,83 @@
 				});
 			});
 		});
+
+	$(document).on('click', '.create-room', function(){ 
+			var jobid = $('#jobid').val();
+			var roomId = $("#roomList").val();
+
+			$.post("job-draft-crud.php", { action: 'createRoom', jobid: jobid, roomId: roomId }) 
+			.done(function(data){
+				var response = jQuery.parseJSON(data);
+				location.reload();
+			});
+		});
+
+	$(document).on('click', '.sing-off-btn', function(){ 
+			var jobid = $('#jobid').val();
+			var taskid = $(this).val();
+
+			$.confirm({
+				text: "Are you sure you want to sing off?",
+				confirm: function() {
+					$.post("job-draft-crud.php", { action: 'singOff', jobid: jobid, taskid: taskid }) 
+					.done(function(data){
+						var response = jQuery.parseJSON(data);
+						location.reload();
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		});
+	
+	$(document).on('click', '.sing-off-all-btn', function(){ 
+			var jobid = $('#jobid').val();
+
+			$.confirm({
+				text: "Are you sure you want to sing off?",
+				confirm: function() {
+					$.post("job-draft-crud.php", { action: 'singOffAll', jobid: jobid}) 
+					.done(function(data){
+						var response = jQuery.parseJSON(data);
+						location.reload();
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		});
+
+	$(document).on('submit', '#task-form', function() {
+             
+        $.post("job-draft-crud.php", $(this).serialize())
+            .done(function(data) {
+                location.reload();
+            });
+                 
+        return false;
+    });
+
+	$.validator.setDefaults({
+            highlight: function(element) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorElement: 'span',
+            errorClass: 'help-block',
+            errorPlacement: function(error, element) {
+                if(element.parent('.input-group').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+
 	</script>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

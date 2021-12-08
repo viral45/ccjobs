@@ -15,7 +15,7 @@ include("header.php");
 
 ?>
 
-<div class="page-header">
+<div class="page-header" style="padding-bottom:30px;">
     <h1>
       <span id="pageTitle">Jobs</span>
       <a type="button" href="projects.php" id="add-btn-project" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Project</a>
@@ -34,12 +34,12 @@ include("header.php");
 
             <div class="form-group">
             	
-            	<div class="col-sm-3">
+            	<div class="col-sm-2">
                 	<label for="searchJobNo">Job No.</label>
                 	<input type="text" class="form-control" id="searchJobNo" name="searchJobNo" placeholder="Job No">
                 </div>
                 
-            	<div class="col-sm-6">
+            	<div class="col-sm-4">
                 	<label for="searchJobNo">Address</label>
                 	<input type="text" class="form-control" id="searchAddress" name="searchAddress" placeholder="Address">
                 </div>
@@ -62,6 +62,15 @@ include("header.php");
 							}
 						?>
 				  </select>
+				</div>               
+	            <div class="col-sm-3">
+					  <label for="projectId">Status:</label>
+					  <select class="form-control"  name="status">
+					    <option value="">None</option>
+					    <option value="1">Open</option>
+					    <option value="2">Close</option>
+					    <option value="99">All</option>
+					  </select>
 				</div>               
             </div>
 			

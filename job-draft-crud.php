@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id'])){
 include("config.php"); 
 
 if (isset($_POST['action'])){	
-	
+
 	//start a job
 	if ($_POST['action'] == "start"){
 		if ($_SESSION['is_draftsman'] <> 0){
@@ -70,9 +70,10 @@ if (isset($_POST['action'])){
 			$taskid = $_POST['taskid'];
 			$datecompleted = date("Y-m-d H:i:s");
 			$completedby = $_SESSION['user_id'];
+			$is_off = 1;
 
-			$update_stmt = $mysqli->prepare("UPDATE tblJobTaskDraft SET DateCompleted = ?, CompletedBy = ? WHERE JobID = ? AND TaskID = ?");
-			$update_stmt->bind_param('ssii', $datecompleted, $completedby, $jobid, $taskid); 
+			$update_stmt = $mysqli->prepare("UPDATE tblJobTaskDraft SET DateCompleted = ?, CompletedBy = ?,is_off = ? WHERE JobID = ? AND TaskID = ?");
+			$update_stmt->bind_param('ssii', $datecompleted, $completedby, $is_off ,$jobid, $taskid); 
 			$update_stmt->execute();
 					
 			if ($update_stmt->affected_rows != -1){
@@ -80,11 +81,100 @@ if (isset($_POST['action'])){
 			}
 			else{
 				$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be completed</div>";
-			}
+			}	
 				
 			echo json_encode($data);
 		}
 	}
+
+	//sing off
+	if ($_POST['action'] == "singOff"){
+		if ($_SESSION['is_JobApprove'] == 1){
+
+			$jobid = $_POST['jobid'];
+			$taskid = $_POST['taskid'];
+			$datecompleted = date("Y-m-d H:i:s");
+			$completedby = $_SESSION['user_id'];
+			$is_off = 1;
+
+			$update_stmt = $mysqli->prepare("UPDATE tblJobTaskDraft SET DateCompleted = ?, CompletedBy = ?, is_off = ? WHERE JobID = ? AND TaskID = ?");
+			$update_stmt->bind_param('ssiii', $datecompleted, $completedby, $is_off, $jobid, $taskid); 
+			$update_stmt->execute();
+					
+			if ($update_stmt->affected_rows != -1){
+				$data['msg'] = "<div class='alert alert-success' role='alert'>The job was sing off successfully.</div>";
+			}
+			else{
+				$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be sing off.</div>";
+			}
+			echo json_encode($data);
+		}
+	}
+
+	//sing off All
+	if ($_POST['action'] == "singOffAll"){
+		if ($_SESSION['is_JobApprove'] == 1){
+
+			$jobid = $_POST['jobid'];
+			$datecompleted = date("Y-m-d H:i:s");
+			$completedby = $_SESSION['user_id'];
+			$is_off = 1;
+
+			$update_stmt = $mysqli->prepare("UPDATE tblJobTaskDraft SET DateCompleted = ?, CompletedBy = ?, is_off = ? WHERE JobID = ?");
+			$update_stmt->bind_param('ssii', $datecompleted, $completedby, $is_off, $jobid); 
+			$update_stmt->execute();
+					
+			if ($update_stmt->affected_rows != -1){
+				$data['msg'] = "<div class='alert alert-success' role='alert'>The job was sing off successfully.</div>";
+			}
+			else{
+				$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be sing off.</div>";
+			}
+			echo json_encode($data);
+		}
+	}
+
+	// add new task room
+	if ($_POST['action'] == "taskInsert"){
+
+		$taskName = $_POST['task_name'];
+		$Weight = 1;
+
+		$insert_stmt = $mysqli->prepare("INSERT INTO tbltask (TaskName,Weight) VALUES (?,?)");
+		$insert_stmt->bind_param('si', $taskName,$Weight); 
+		$insert_stmt->execute();
+				
+		if ($insert_stmt->affected_rows != -1){
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The task room successfully.</div>";
+		}
+		else{
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The task room not add.</div>";
+		}
+		echo json_encode($data);
+	}
+
+	// add new room
+	if ($_POST['action'] == "createRoom"){
+
+		$taskId = $_POST['roomId'];
+		$jobid = $_POST['jobid'];
+		$DateStarted = date("Y-m-d H:i:s");
+		$userId = $_SESSION['user_id'];
+
+		$insert_stmt = $mysqli->prepare("INSERT INTO tbljobtaskdraft (JobID,TaskID,DateStarted,StartedBy) VALUES (?,?,?,?)");
+		
+		$insert_stmt->bind_param('iisi', $jobid,$taskId,$DateStarted,$userId); 
+		$insert_stmt->execute();
+				
+		if ($insert_stmt->affected_rows != -1){
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The room add successfully.</div>";
+		}
+		else{
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The room not add.</div>";
+		}
+		echo json_encode($data);
+	}
+
 
 	// save checklist and missing items
 	if ($_POST['action'] == "savechecklist"){

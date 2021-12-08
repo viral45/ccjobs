@@ -10,9 +10,19 @@ include("config.php");
 
 
 if (isset($_REQUEST["page"])) { $page  = $_REQUEST["page"]; } else { $page=1; };  
+if (isset($_REQUEST["status"])) { $SortStatus  = $_REQUEST["status"]; } else { $SortStatus=1; };  
 
 //search variables
-$where = " WHERE JobID IS NOT NULL AND Deleted = 0";
+$where = " WHERE JobID IS NOT NULL  AND Deleted = 0";
+
+if($SortStatus != '')
+{
+    if($SortStatus == 99){ $where .= " AND status IS NOT NULL "; } else {  $where .= " AND status = " . $SortStatus;} 
+}
+else
+{
+    $where .= " AND status = 1";
+}
 
 if (!empty($_REQUEST['searchJobNo'])){	
 	$where .= " AND JobID LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchJobNo']) . "%'";
@@ -26,6 +36,7 @@ if(!empty($_REQUEST['projectId']))
 {
     $where .= " AND ProjectID = " . $_REQUEST['projectId'];
 }
+
  
  $orderBy = "ORDER BY ProjectID ASC, JobID ASC";
 
@@ -76,6 +87,12 @@ if(!empty($_REQUEST['projectId']))
                             <i class="fa fa-sort-desc" id="DateEnteredDESC" data-name="DateEntered" data-sort="DESC" aria-hidden="true"></i>
                         </span>
                     </th>
+                    <th>Status
+                        <span class="sort-icon"> 
+                            <i class="fa fa-sort-asc" id="statusASC" data-name="status" data-sort="ASC"  aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="statusDESC" data-name="status" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
                     <th>Measure Date
                         <span class="sort-icon"> 
                             <i class="fa fa-sort-asc" id="DateMeasureASC" data-name="DateMeasure" data-sort="ASC"  aria-hidden="true"></i>
@@ -89,7 +106,7 @@ if(!empty($_REQUEST['projectId']))
                 
                 <?php 
                    
-                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
+                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure,status FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
 
                 $result = $mysqli->query($query);
                 $getProjectName = '';
@@ -115,7 +132,7 @@ if(!empty($_REQUEST['projectId']))
                         ?>
 
                         <tr>
-                            <td colspan="5" class="text-center "><h5><?php echo $getProjectName; ?></h5></td>
+                            <td colspan="6" class="text-center "><h5><?php echo $getProjectName; ?></h5></td>
                         </tr>
                     <?php
                     }
@@ -124,6 +141,19 @@ if(!empty($_REQUEST['projectId']))
                         <td ><?php echo $row['JobID'] ?></td>
                         <td ><?php echo $row['JobAddress'] ?></td>                       
                         <td><?php echo date("d-m-Y", strtotime($row['DateEntered'])) ?></td>
+                        <td>
+                            <?php 
+                                if($row['status'] == 1)
+                                {
+                                    $status = 'open';
+                                }
+                                elseif($row['status'] == 2)
+                                {
+                                    $status = 'closed';
+                                }
+                                echo $status;
+                            ?>
+                         </td>
                         <td><?php echo (!empty($row['DateMeasure']) ? date("d-m-Y", strtotime($row['DateMeasure']))  : ""); ?></td>
 
                         <td nowrap>   
