@@ -1,7 +1,7 @@
-﻿body {
+﻿/*body {
   padding-top: 30px;
 }
-
+*/
 .navbar-brand{
 	padding:0;
 }
@@ -35,6 +35,10 @@ input[readonly] {
 }
 
 .navbar .active > a { background:#CE1500!important } 
+
+.widget-menu .active > a { background:#CE1500!important; color: #fff;} 
+
+.widget-menu .active > a i { color: #fff !important} 
 
 .navbar-inverse{
 	background-color:#000;
@@ -148,3 +152,11 @@ h1 .pageTitle{
 	display: inline-grid;
 	margin-left: 5px;
 }
+
+.nav-collapse.navbar-inverse-collapse {
+    display: block;
+    padding: 10px 20px 10px;;
+}
+
+
+

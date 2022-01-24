@@ -68,8 +68,58 @@
 			</div>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="well">				
-							Current User: <strong><?php echo $_SESSION['full_name'] ?></strong>
+					<div class="well">
+					<?php 
+					$roleArray = array();
+						if( $_SESSION['is_foreman'] == 1 )
+						{
+							$roleArray[] = ucfirst('foreman');
+						}
+						if( $_SESSION['is_draftsman'] == 1 )
+						{
+							$roleArray[] = ucfirst('draftsman');
+						}
+						if( $_SESSION['is_cnc'] == 1 )
+						{
+							$roleArray[] = ucfirst('cnc');
+						}
+						if( $_SESSION['is_edging'] == 1 )
+						{
+							$roleArray[] = ucfirst('edging');
+						}
+						if( $_SESSION['is_assembler'] == 1 )
+						{	
+							$roleArray[] = ucfirst('assembler');
+						}
+						if( $_SESSION['is_installer'] == 1 )
+						{
+							$roleArray[] = ucfirst('installer');
+						}
+						if( $_SESSION['is_delivery'] == 1 )
+						{
+							$roleArray[] = ucfirst('delivery');
+						}
+						if( $_SESSION['is_maint'] == 1 )
+						{
+							$roleArray[] = ucfirst('maint');
+						}
+						if( $_SESSION['is_JobApprove'] == 1 )
+						{
+							$roleArray[] = ucfirst('JobApprove');
+						}
+					?>				
+							Current User: <strong><?php echo $_SESSION['full_name'] ?></strong><br>
+							User Role: <strong><?php 
+								foreach ($roleArray as $key => $value) {
+									
+									echo $value;
+									if($key+1 != count($roleArray))
+									{
+										echo ', ';
+									}
+
+								}
+							 ?></strong>
 					</div>
 					<input type="hidden" id="jobid" name="jobid" value="<?php if (isset($_GET['jobid'])) { echo $_GET['jobid']; } ?>">
 					
@@ -140,41 +190,62 @@
 								<btn class="btn btn-lg btn-info plans-btn">Plans</btn>
 					
 								<a href="index.php" class="btn btn-warning btn-lg">Home</a>
-								<i class="fa fa-2x btn btn-info fa-plus-circle" aria-hidden="true" data-toggle="modal" data-target="#newRoom"></i>
+								
 								</div>
 								<?php
-									$remove_null = array_filter($taskarray, fn($value) => !is_null($value) && $value !== '');
+									//$remove_null = array_filter($taskarray, fn($value) => !is_null($value) && $value !== '');
+									$remove_null = array_filter( $taskarray );
 
 									$taskarray_data = implode(',', $remove_null); 
 
-									
-									$taskData_query = "SELECT * FROM tbltask WHERE TaskID NOT IN ($taskarray_data) And TaskID != 1";
+									if($taskarray_data != null)
+									{
+
+										$taskData_query = "SELECT tblTask.*, tblUser.FullName  FROM tblTask LEFT JOIN tblUser ON tblTask.user_id = tblUser.UserID WHERE TaskID NOT IN ($taskarray_data) And TaskID != 1";
+									}
+									else
+									{
+										$taskData_query = "SELECT tblTask.*, tblUser.FullName  FROM tblTask LEFT JOIN tblUser ON tblTask.user_id = tblUser.UserID WHERE TaskID != 1";
+									}
 									$task_result = mysqli_query($mysqli, $taskData_query);
-									$task_result_list = mysqli_num_rows($task_result);
+									if($task_result != null)
+									{
+										$task_result_list = mysqli_num_rows($task_result) ;
+									}
+									else
+									{
+										$task_result_list = -1;
+									}
 
 									if($task_result_list > 0){
 
 								?>
 									
-									<div class="col-md-4">
-										<div class="form-group">
-											<label>Add Room</label>
+									<div class="col-md-3">
+										<div class="form-group err_roomList">
+											<label>Room Type</label>
 										  <select class="form-control" id="roomList">
 										  	 <option value="">select</option>
 										    <?php
 
 											    while($row = mysqli_fetch_assoc($task_result)) 
 											    {
-											    	echo '<option value="'.$row['TaskID'].'">'.$row['TaskName'].'</option>';
+											    	
+											    	echo '<option value="'.$row['TaskID'].'">'.$row['TaskName'].' - '.$row['FullName'].'</option>';
 											    }
 										    ?>
 										  </select>
 										</div>
 									</div>
 									<div class="col-md-1">
-										<btn class="btn btn-lg create-room btn-success">submit</btn>
+										<!-- <i class="fa fa-2x btn btn-info fa-plus-circle create-room"></i> -->
+										<btn class="btn btn-lg btn-primary create-room">Create New Room Type</btn>
 									</div>
 									<?php } ?>
+									<div class="col-md-2">
+										<btn class="btn btn-lg btn-success l-75" aria-hidden="true" data-toggle="modal" data-target="#newRoom" >Add Room</btn>
+										
+									</div>
 									<?php
 
 									$query = "SELECT tblJobTaskDraft.*, tblTask.TaskName FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $jobid ORDER BY tblJobTaskDraft.TaskID";
@@ -192,8 +263,8 @@
 
 									if ($_SESSION['is_JobApprove'] == 1 && $signOff == 1){ ?>
 
-									<div class="col-md-3">
-										<btn class="btn btn-lg btn-info sing-off-all-btn text-right">Sing Off All</btn>
+									<div class="col-md-1">
+										<btn class="btn btn-lg btn-info sing-off-all-btn text-right l-70" >Sign Off All</btn>
 									</div>
 									
 								<?php } ?>
@@ -400,7 +471,12 @@
 											<?php
 													if ($_SESSION['is_JobApprove'] == 1 && $row['is_off'] == 0 && empty($row['DateCompleted'])){
 											?>
-														<button class="sing-off-btn btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sing Off</button>
+														<button class="sing-off-btn btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sign Off</button>
+											<?php } ?>	
+											<?php
+													if ($_SESSION['is_JobApprove'] == 1){
+											?>
+														<button class="delete-room-btn btn btn-danger btn-lg" type="button" data-id="<?php echo $_SESSION['user_id'] ?>" value='<?php echo $row['TaskID'] ?>'>Delete</button>
 											<?php } ?>	
 											<br><br>
 											<div class="collapse" id="checklistdraft<?php echo $row['TaskID']?>">
@@ -1119,7 +1195,7 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title"> New Room Add</h4>
+        <h4 class="modal-title">Add New Room Type</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
@@ -1128,11 +1204,54 @@
         <form id='task-form' action='#' method='post'>
         	<input type="hidden" id="action" name="action" value="taskInsert">
         		<div class="form-group">
-						  <label for="usr">Task Name</label>
+						  <label for="usr">Room Type Name</label>
 						  <input type="text" class="form-control" name="task_name">
 						</div>
 						<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
         </form>
+        <hr>
+        <div style="margin-top: 10px;  padding: 5px;">
+        	<?php
+				$userid = $_SESSION['user_id'];
+				$taskData_query = "SELECT * FROM tblTask WHERE user_id = $userid";
+				
+				$task_result = mysqli_query($mysqli, $taskData_query);
+				if($task_result != null)
+				{
+					$task_result_list = mysqli_num_rows($task_result) ;
+				}
+				else
+				{
+					$task_result_list = -1;
+				}
+				
+				if($task_result_list > 0){
+					echo '<table class="table">
+								<thead>
+									<tr>
+										<th>Room Type Name</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>';
+							
+						
+
+				 while($rows = mysqli_fetch_assoc($task_result)) 
+			    {
+
+			    	echo '<tr>';
+						echo '<td>'.$rows["TaskName"].'</td>';
+						echo '<td><button type="button" data-id="'.$rows["TaskID"].'"" class="btn btn-sm btn-danger RemoveRoom"><i class="fa fa-times-circle" aria-hidden="true"></i></button></td>';
+					echo '</tr>';
+			    	
+			    }
+
+			   echo '</tbody>
+			   </table>';
+			 }
+		    ?>
+        </div>
       </div>
 
       <!-- Modal footer -->
@@ -1656,11 +1775,18 @@
 			var jobid = $('#jobid').val();
 			var roomId = $("#roomList").val();
 
-			$.post("job-draft-crud.php", { action: 'createRoom', jobid: jobid, roomId: roomId }) 
-			.done(function(data){
-				var response = jQuery.parseJSON(data);
-				location.reload();
-			});
+			if(roomId != "")
+			{
+				$.post("job-draft-crud.php", { action: 'createRoom', jobid: jobid, roomId: roomId }) 
+				.done(function(data){
+					var response = jQuery.parseJSON(data);
+					location.reload();
+				});
+			}
+			else
+			{
+				$('.err_roomList').append('<span class="small alerts text-danger">Please Select Room Type</span>');
+			}
 		});
 
 	$(document).on('click', '.sing-off-btn', function(){ 
@@ -1668,7 +1794,7 @@
 			var taskid = $(this).val();
 
 			$.confirm({
-				text: "Are you sure you want to sing off?",
+				text: "Are you sure you want to sign off?",
 				confirm: function() {
 					$.post("job-draft-crud.php", { action: 'singOff', jobid: jobid, taskid: taskid }) 
 					.done(function(data){
@@ -1681,12 +1807,50 @@
 				}
 			});
 		});
+	$(document).on('click', '.delete-room-btn', function(){ 
+			var jobid = $('#jobid').val();
+			var taskid = $(this).val();
+			var user_id = $(this).data('id');
+
+			$.confirm({
+				text: "Are you sure you want to delete room?",
+				confirm: function() {
+					$.post("job-draft-crud.php", { action: 'deleteRoom', jobid: jobid, taskid: taskid, user_id: user_id}) 
+					.done(function(data){
+						var response = jQuery.parseJSON(data);
+						location.reload();
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		});
+
+	$(document).on('click', '.RemoveRoom', function(){ 
+		
+		var room_id = $(this).data('id');
+
+		$.confirm({
+			text: "Are you sure you want to delete room?",
+			confirm: function() {
+				$.post("job-draft-crud.php", { action: 'RemoveRoom', room_id: room_id}) 
+				.done(function(data){
+					var response = jQuery.parseJSON(data);
+					location.reload();
+				});
+			},
+			cancel: function() {
+				// nothing to do
+			}
+		});
+	});
 	
 	$(document).on('click', '.sing-off-all-btn', function(){ 
 			var jobid = $('#jobid').val();
 
 			$.confirm({
-				text: "Are you sure you want to sing off?",
+				text: "Are you sure you want to sign off?",
 				confirm: function() {
 					$.post("job-draft-crud.php", { action: 'singOffAll', jobid: jobid}) 
 					.done(function(data){

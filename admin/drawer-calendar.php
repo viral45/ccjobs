@@ -26,7 +26,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
 
 <div class="table-responsive">
 
-    <table id="caltable" class="table table-bordered table-striped">
+    <table id="caltable" class="table table-bordered table-striped bg-info shaded-icon">
         <thead>
             <tr>
                 <th style="width: 15%">Draftsman</th>

@@ -134,14 +134,62 @@ if (isset($_POST['action'])){
 		}
 	}
 
+	//delete room
+	if ($_POST['action'] == "deleteRoom"){
+		if ($_SESSION['is_JobApprove'] == 1){
+
+			$jobid = $_POST['jobid'];
+			$taskid = $_POST['taskid'];
+			$user_id = $_SESSION['user_id'];
+			
+
+			$query = "DELETE FROM tblJobTaskDraft WHERE JobID = $jobid AND TaskID = $taskid";
+
+					
+			if ($mysqli->query($query) === TRUE){
+				$data['msg'] = "<div class='alert alert-success' role='alert'>The job was deleted successfully.</div>";
+			}
+			else{
+				$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be deleted.</div>";
+			}
+			echo json_encode($data);
+		}
+	}
+
+	//Remove room
+	if ($_POST['action'] == "RemoveRoom"){
+		
+
+		
+		$taskid = $_POST['room_id'];
+		$user_id = $_SESSION['user_id'];
+		
+
+		$query = "DELETE FROM tbltask WHERE TaskID = $taskid AND user_id = $user_id";
+		$queryDraf = "DELETE FROM tblJobTaskDraft WHERE TaskID = $taskid ";
+
+				
+		if ($mysqli->query($query) === TRUE && $mysqli->query($queryDraf) === TRUE){
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The room was deleted successfully.</div>";
+		}
+		else{
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The room could not be deleted.</div>";
+		}
+		echo json_encode($data);
+		
+	}
+
+
+
 	// add new task room
 	if ($_POST['action'] == "taskInsert"){
 
 		$taskName = $_POST['task_name'];
 		$Weight = 1;
+		$user_id = $_SESSION['user_id'];
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tbltask (TaskName,Weight) VALUES (?,?)");
-		$insert_stmt->bind_param('si', $taskName,$Weight); 
+		$insert_stmt = $mysqli->prepare("INSERT INTO tbltask (TaskName,Weight,user_id) VALUES (?,?,?)");
+		$insert_stmt->bind_param('sii', $taskName,$Weight,$user_id); 
 		$insert_stmt->execute();
 				
 		if ($insert_stmt->affected_rows != -1){

@@ -65,7 +65,7 @@ if(!empty($_REQUEST['projectId']))
 		if ($row[0] > 0 ){
 	?> 
     
-        <table class="table table-striped">
+        <table class="table table-striped bg-info shaded-icon table-hover">
             <thead>
                 <tr>
                     <th nowrap>
