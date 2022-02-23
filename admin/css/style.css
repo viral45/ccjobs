@@ -34,7 +34,7 @@ input[readonly] {
 	background-color: #fff;
 }
 
-.navbar .active > a { background:#CE1500!important } 
+.navbar .active > a { background:#CE1500!important; color: #fff !important; } 
 
 .widget-menu .active > a { background:#CE1500!important; color: #fff;} 
 

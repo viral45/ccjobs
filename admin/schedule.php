@@ -20,6 +20,15 @@ include("header.php");
       <span id="pageTitle">Schedule</span>
       <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
     </h1>
+    <!-- <ul>
+    <li>Show Which Schedule is being viewed e.g. Installer Schedule</li>
+    <li>???List View</li>
+    <li>??? Mounth View</li>
+    <li>??? Mouse Over shows job details</li>
+    <li>??? Do we want status colours</li>
+    <li>??? Do you want Add New Project on this screen</li>
+    <li>??? Do you want list unscheduled jobs</li>
+    </ul>-->
 </div>
 
 <div id="alert"></div>

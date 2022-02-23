@@ -37,7 +37,7 @@ if (isset($_POST['action'])){
 			$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be added</div>";
 			$data['action'] = "add";
 		}
-		print_r($insert_stmt);
+		
 			
 		echo json_encode($data);
 	}

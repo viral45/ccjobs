@@ -108,7 +108,8 @@
 							$roleArray[] = ucfirst('JobApprove');
 						}
 					?>				
-							Current User: <strong><?php echo $_SESSION['full_name'] ?></strong><br>
+							Current User: <strong><?php echo $_SESSION['full_name'] ?></strong> 
+							<br>
 							User Role: <strong><?php 
 								foreach ($roleArray as $key => $value) {
 									
@@ -125,11 +126,11 @@
 					
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<h1><?php echo "Job #" . $formjobid ?></h1>
+							<h1><?php echo "Job #" . $formjobid ?> </h1>
 							<h3><?php echo  $formjobaddress ?></h3>
 							<?php echo (!empty($formbuilder) ? '<h4>'.$formbuilder.'</h4>' : ''); ?>
 							<a class="btn btn-xs btn-danger" href='<?php echo "https://www.google.com/maps?q=" . urlencode($formjobaddress); ?>' target="_blank"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View Map</a>
-							
+							<?php if($_SESSION['is_draftsman'] == 1){ ?><button class="btn btn-primary btn-sm ml-3">Create Sub Job</button> <?php } ?>
 						</div>
 					</div>
 
@@ -137,8 +138,8 @@
 						<!-- Nav tabs -->
 						<ul class="nav nav-tabs" role="tablist" id="myTab">
 							<li role="presentation"><a href="#draftsman" aria-controls="draftsman" role="tab" data-toggle="tab">Draftsman</a></li>
-							<li role="presentation"><a href="#cnc" aria-controls="cnc" role="tab" data-toggle="tab">CNC</a></li>
-							<li role="presentation"><a href="#edging" aria-controls="edging" role="tab" data-toggle="tab">Edging</a></li>
+							<!-- <li role="presentation"><a href="#cnc" aria-controls="cnc" role="tab" data-toggle="tab">CNC</a></li>
+							<li role="presentation"><a href="#edging" aria-controls="edging" role="tab" data-toggle="tab">Edging</a></li> -->
 							<li role="presentation" class="active"><a href="#assembler" aria-controls="assembler" role="tab" data-toggle="tab">Assembler</a></li>
 							<li role="presentation"><a href="#installer" aria-controls="installer" role="tab" data-toggle="tab">Installer</a></li>
 							<li role="presentation"><a href="#maintenance" aria-controls="maintenance" role="tab" data-toggle="tab">Maintenance</a></li>
@@ -221,7 +222,7 @@
 
 								?>
 									
-									<div class="col-md-3">
+									<!-- <div class="col-md-3">
 										<div class="form-group err_roomList">
 											<label>Room Type</label>
 										  <select class="form-control" id="roomList">
@@ -238,9 +239,8 @@
 										</div>
 									</div>
 									<div class="col-md-1">
-										<!-- <i class="fa fa-2x btn btn-info fa-plus-circle create-room"></i> -->
 										<btn class="btn btn-lg btn-primary create-room">Create New Room Type</btn>
-									</div>
+									</div> -->
 									<?php } ?>
 									<div class="col-md-2">
 										<btn class="btn btn-lg btn-success l-75" aria-hidden="true" data-toggle="modal" data-target="#newRoom" >Add Room</btn>
@@ -491,7 +491,7 @@
 																<label for="inputNotes">Measure Notes</label>
 																<textarea class="form-control" id="inputNotes" name="inputNotes" rows="6"><?php if (isset($row['Notes'])) { echo htmlspecialchars($row['Notes'], ENT_QUOTES); } ?></textarea>
 															</div>																																									
-															<div class="form-group">
+															<!-- <div class="form-group">
 																<label for="inputMissingItems">Missing Items</label>
 																<textarea class="form-control" id="inputMissingItems" name="inputMissingItems" rows="6"><?php if (isset($row['MissingItems'])) { echo htmlspecialchars($row['MissingItems'], ENT_QUOTES); } ?></textarea>
 															</div>
@@ -499,7 +499,7 @@
 																<label>
 																	<input name="inputMissingItemsComplete" type="checkbox" value="1" <?php if (isset($row['MissingItemsComplete'])) { if ($row['MissingItemsComplete']==1){ echo " CHECKED"; } } ?>> All missing items completed
 																</label>
-															</div>
+															</div> -->
 															
 															<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
 														</fieldset>
@@ -650,7 +650,7 @@
 												</button>
 												<ul id="start-list" class="dropdown-menu">
 												<?php
-													$query = "SELECT TaskID, TaskName, Weight FROM tblTask ORDER BY TaskID";
+													$query = "SELECT TaskID, TaskName, Weight FROM tblTask WHERE RoomStatus = 1 ORDER BY TaskID";
 													$result = $mysqli->query($query);
 
 													while($row = $result->fetch_array()){
@@ -863,11 +863,11 @@
 																		<label for="inputMissingItems">Missing Items</label>
 																		<textarea class="form-control" id="inputMissingItems" name="inputMissingItems" rows="6"><?php if (isset($row['MissingItems'])) { echo htmlspecialchars($row['MissingItems'], ENT_QUOTES); } ?></textarea>
 																	</div>
-																	<div class="form-group">
+																	<!-- <div class="form-group">
 																		<label>
 																			<input name="inputMissingItemsComplete" type="checkbox" value="1" <?php if (isset($row['MissingItemsComplete'])) { if ($row['MissingItemsComplete']==1){ echo " CHECKED"; } } ?>> All missing items completed
 																		</label>
-																	</div>
+																	</div> -->
 																	
 																	<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
 																</fieldset>
@@ -907,7 +907,7 @@
 												</button>
 												<ul id="install-list" class="dropdown-menu">
 												<?php
-													$query = "SELECT TaskID, TaskName, Weight FROM tblTask ORDER BY TaskID";
+													$query = "SELECT TaskID, TaskName, Weight FROM tblTask WHERE RoomStatus = 1 ORDER BY TaskID";
 													$result = $mysqli->query($query);
 
 													while($row = $result->fetch_array()){
@@ -1045,11 +1045,11 @@
 																		<label for="inputMissingItems">Missing Items</label>
 																		<textarea class="form-control" id="inputMissingItems" name="inputMissingItems" rows="6"><?php if (isset($row['MissingItems'])) { echo htmlspecialchars($row['MissingItems'], ENT_QUOTES); } ?></textarea>
 																	</div>
-																	<div class="form-group">
+																	<!-- <div class="form-group">
 																		<label>
 																			<input name="inputMissingItemsComplete" type="checkbox" value="1" <?php if (isset($row['MissingItemsComplete'])) { if ($row['MissingItemsComplete']==1){ echo " CHECKED"; } } ?>> All missing items completed
 																		</label>
-																	</div>
+																	</div> -->
 																	
 																	<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
 
@@ -1203,6 +1203,7 @@
       <div class="modal-body">
         <form id='task-form' action='#' method='post'>
         	<input type="hidden" id="action" name="action" value="taskInsert">
+        	<input type="hidden" id="Roomjobid" name="Roomjobid" value="<?php if (isset($_GET['jobid'])) { echo $_GET['jobid']; } ?>">
         		<div class="form-group">
 						  <label for="usr">Room Type Name</label>
 						  <input type="text" class="form-control" name="task_name">
@@ -1865,7 +1866,7 @@
 		});
 
 	$(document).on('submit', '#task-form', function() {
-             
+
         $.post("job-draft-crud.php", $(this).serialize())
             .done(function(data) {
                 location.reload();

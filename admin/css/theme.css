@@ -203,7 +203,7 @@ body [class^="icon-"], body [class*=" icon-"] {
 }
 .navbar .nav>li>a {
 	padding: 20px 15px;
-	font-weight: bold;
+	font-weight: 500;
 	color: #777
 }
 .navbar .nav>li.active , .navbar .nav>li.active , .navbar .nav>li.active, .navbar .nav>li:hover  {
@@ -1709,6 +1709,19 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', end
 }
 
 .span9 form {
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 3px 5px 4px rgb(0 0 0 / 5%);
+    border: 1px solid #ddd;
+}
+.span12 .page-header {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 3px 5px 4px rgb(0 0 0 / 5%);
+}
+
+.span12 form {
     background-color: #fff;
     padding: 10px;
     box-shadow: 3px 5px 4px rgb(0 0 0 / 5%);

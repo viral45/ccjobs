@@ -165,7 +165,7 @@ if (isset($_POST['action'])){
 		$user_id = $_SESSION['user_id'];
 		
 
-		$query = "DELETE FROM tbltask WHERE TaskID = $taskid AND user_id = $user_id";
+		$query = "DELETE FROM tblTask WHERE TaskID = $taskid AND user_id = $user_id";
 		$queryDraf = "DELETE FROM tblJobTaskDraft WHERE TaskID = $taskid ";
 
 				
@@ -187,12 +187,21 @@ if (isset($_POST['action'])){
 		$taskName = $_POST['task_name'];
 		$Weight = 1;
 		$user_id = $_SESSION['user_id'];
+		$jobid = $_POST['Roomjobid'];
+		$DateStarted = date("Y-m-d H:i:s");
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tbltask (TaskName,Weight,user_id) VALUES (?,?,?)");
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblTask (TaskName,Weight,user_id) VALUES (?,?,?)");
 		$insert_stmt->bind_param('sii', $taskName,$Weight,$user_id); 
 		$insert_stmt->execute();
 				
 		if ($insert_stmt->affected_rows != -1){
+
+			$taskId = $insert_stmt->insert_id;
+
+			$Room_insert_stmt = $mysqli->prepare("INSERT INTO tblJobTaskDraft (JobID,TaskID,DateStarted,StartedBy) VALUES (?,?,?,?)");
+			$Room_insert_stmt->bind_param('iisi', $jobid,$taskId,$DateStarted,$user_id); 
+			$Room_insert_stmt->execute();
+
 			$data['msg'] = "<div class='alert alert-success' role='alert'>The task room successfully.</div>";
 		}
 		else{
@@ -209,7 +218,7 @@ if (isset($_POST['action'])){
 		$DateStarted = date("Y-m-d H:i:s");
 		$userId = $_SESSION['user_id'];
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tbljobtaskdraft (JobID,TaskID,DateStarted,StartedBy) VALUES (?,?,?,?)");
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblJobTaskDraft (JobID,TaskID,DateStarted,StartedBy) VALUES (?,?,?,?)");
 		
 		$insert_stmt->bind_param('iisi', $jobid,$taskId,$DateStarted,$userId); 
 		$insert_stmt->execute();
@@ -232,8 +241,10 @@ if (isset($_POST['action'])){
 			$taskid = $_POST['taskid'];
 			
 			$notes = trim($_POST['inputNotes']);
-			$missingitems = trim($_POST['inputMissingItems']);
-			$missingitemscomplete = isset($_POST['inputMissingItemsComplete']) ? $_POST['inputMissingItemsComplete'] : 0;
+			$missingitems = '';
+			//$missingitems = trim($_POST['inputMissingItems']);
+			//$missingitemscomplete = isset($_POST['inputMissingItemsComplete']) ? $_POST['inputMissingItemsComplete'] : 0;
+			$missingitemscomplete = 1;
 
 			$update_stmt = $mysqli->prepare("UPDATE tblJobTaskDraft SET Notes = ?, MissingItems = ?, MissingItemsComplete = ? WHERE JobID = ? AND TaskID = ?");
 			$update_stmt->bind_param('ssiii', $notes, $missingitems, $missingitemscomplete, $jobid, $taskid); 
