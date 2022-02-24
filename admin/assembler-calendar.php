@@ -100,7 +100,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
                                     else   
                                         $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
 
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['AssemblerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['AssemblerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $alertstring . " " . $schedulerow['JobAddress'] . "</div>";
+                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['AssemblerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['AssemblerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#assembler' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
                                         
                                 }
                                 else{

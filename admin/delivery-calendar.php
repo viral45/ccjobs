@@ -63,7 +63,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                                 else   
                                     $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
 
-                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $alertstring . " " . $deliveryrow['JobAddress'] . "</div>";
+                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$deliveryrow['JobID']."#installer' target='_blank>" . $alertstring . " " . $deliveryrow['JobAddress'] . "</a></div>";
                                     
                             }
                             else{

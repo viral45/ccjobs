@@ -134,6 +134,145 @@ if (isset($_POST['action'])){
 		}
 	}
 
+	if($_POST['action'] == "singOffAlert")
+	{
+		$jobid = $_POST['jobid'];
+		$taskid = $_POST['taskid'];
+		
+		if ($stmt = $mysqli->prepare("SELECT JobID, JobAddress, Builder, DateMeasure, MeasureBy FROM tblJob WHERE JobID = ? LIMIT 1")) { 
+			$stmt->bind_param('i', $jobid);
+			$stmt->execute();
+			$stmt->store_result();
+			$stmt->bind_result($formjobid, $formjobaddress, $formbuilder, $formdatemeasure, $formmeasureby);
+			$stmt->fetch();
+		}
+		$query = "SELECT Email FROM tblUser WHERE UserID = $formmeasureby";
+		$result = $mysqli->query($query);
+		$row = $result->fetch_array();
+		$sendmail = $row['Email'];
+		
+		$task_query = "SELECT TaskName FROM tblTask WHERE TaskID = $taskid";
+		$task_result = $mysqli->query($task_query);
+		$task_row = $task_result->fetch_array();
+
+
+		$TaskName = $task_row['TaskName'];
+
+		require('classes/class.phpmailer.php');
+		require("classes/class.smtp.php");
+
+		$email_from = "no-reply@challengecabinetsjobs.com.au";
+		$headers = 'From: '.$email_from."\r\n". 'Reply-To: '.$email_from."\r\n" . 'X-Mailer: PHP/' . phpversion();
+		
+
+		$email_subject = "Job #" . $jobid . " - " . $formjobaddress . " (" . $TaskName . " - Room: " . $_SESSION['full_name'] . ")  is ready to sing off room ";
+		$email_message = "Job #" . $jobid . " - " . $formjobaddress . " (" . $TaskName . " - Room: " . $_SESSION['full_name'] . ")  is ready to sing Off job <br><br><a href='http://www.challengecabinetsjobs.com.au'>www.challengecabinetsjobs.com.au</a>";
+
+		$mail = new PHPMailer(true);
+		 $mail->isSMTP();                             // Set mailer to use SMTP
+		 $mail->Host       = 'smtp.gmail.com';             // Set the SMTP server to send through
+		 $mail->SMTPAuth   = true;                    // Enable SMTP authentication
+		 $mail->SMTPDebug = 4; 
+		 $mail->Username   = 'viralb.technocomet@gmail.com';     // SMTP false username
+		 $mail->Password   = 'Default@123';                      // SMTP false password
+		 $mail->SMTPSecure = 'tsl';         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+		 $mail->Port       = 587; 
+
+
+		$mail->AddAddress($sendmail);
+
+		$mail->Subject = $email_subject;
+		$mail->Body = $email_message;
+		$mail->AltBody = 'To view the message, please use an HTML compatible email viewer!';
+		
+		$sendMail_orNot = $mail->Send();
+
+		if ($sendMail_orNot){
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The job was sing off alert send successfully.</div>";
+		}
+		else{
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be sing off alert send.</div>";
+		}
+		echo json_encode($data);
+
+
+	}
+
+	if($_POST['action'] == "singOffAlertAll")
+	{
+		$jobid = $_POST['jobid'];
+		
+
+		if ($stmt = $mysqli->prepare("SELECT JobID, JobAddress, Builder, DateMeasure, MeasureBy FROM tblJob WHERE JobID = ? LIMIT 1")) { 
+			$stmt->bind_param('i', $jobid);
+			$stmt->execute();
+			$stmt->store_result();
+			$stmt->bind_result($formjobid, $formjobaddress, $formbuilder, $formdatemeasure, $formmeasureby);
+			$stmt->fetch();
+		}
+		$query = "SELECT Email FROM tblUser WHERE UserID = $formmeasureby";
+		$result = $mysqli->query($query);
+		$row = $result->fetch_array();
+		$sendmail = $row['Email'];
+		
+		$task_query = "SELECT tblTask.TaskName FROM tblJobTaskDraft JOIN tblTask  ON tblTask.TaskID = tblJobTaskDraft.TaskID WHERE JobID = $jobid AND is_off = 0";
+
+		$task_result = $mysqli->query($task_query);
+		//$task_row = $task_result->fetch_array();
+
+		//$TaskName = $task_row['TaskName'];
+
+		require('classes/class.phpmailer.php');
+		require("classes/class.smtp.php");
+
+		$email_from = "no-reply@challengecabinetsjobs.com.au";
+		$headers = 'From: '.$email_from."\r\n". 'Reply-To: '.$email_from."\r\n" . 'X-Mailer: PHP/' . phpversion();
+		
+		$numberCount = mysqli_num_rows($task_result);
+		if($numberCount > 0)
+		{
+
+			while($task_row = $task_result->fetch_array()){
+
+			
+				$email_subject = "Job #" . $jobid . " - " . $formjobaddress . " (" . $task_row['TaskName'] . " - Room: " . $_SESSION['full_name'] . ")  is ready to sing Off job ";
+				$email_message = "Job #" . $jobid . " - " . $formjobaddress . " (" . $task_row['TaskName'] . " - Room: " . $_SESSION['full_name'] . ")  is ready to sing off room <br><br><a href='http://www.challengecabinetsjobs.com.au'>www.challengecabinetsjobs.com.au</a>";
+				
+
+				$mail = new PHPMailer(true);
+				 $mail->isSMTP();                             // Set mailer to use SMTP
+				 $mail->Host       = 'smtp.gmail.com';             // Set the SMTP server to send through
+				 $mail->SMTPAuth   = true;                    // Enable SMTP authentication
+				 $mail->SMTPDebug = 4; 
+				 $mail->Username   = 'viralb.technocomet@gmail.com';     // SMTP false username
+				 $mail->Password   = 'Default@123';                      // SMTP false password
+				 $mail->SMTPSecure = 'tsl';         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+				 $mail->Port       = 587; 
+
+
+				$mail->AddAddress($sendmail);
+
+				$mail->Subject = $email_subject;
+				$mail->Body = $email_message;
+				$mail->AltBody = 'To view the message, please use an HTML compatible email viewer!';
+				
+				$sendMail_orNot = $mail->Send();
+			}
+			if ($sendMail_orNot){
+				$data['msg'] = "<div class='alert alert-success' role='alert'>The job was sing off alert send successfully.</div>";
+			}
+			else{
+				$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be sing off alert send.</div>";
+			}
+			echo json_encode($data);
+		}
+
+		$data['msg'] = "<div class='alert alert-danger' role='alert'>The job could not be sing off alert send.</div>";
+			
+		echo json_encode($data);
+
+	}
+
 	//delete room
 	if ($_POST['action'] == "deleteRoom"){
 		if ($_SESSION['is_JobApprove'] == 1){

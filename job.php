@@ -129,7 +129,7 @@
 							<h1><?php echo "Job #" . $formjobid ?> </h1>
 							<h3><?php echo  $formjobaddress ?></h3>
 							<?php echo (!empty($formbuilder) ? '<h4>'.$formbuilder.'</h4>' : ''); ?>
-							<a class="btn btn-xs btn-danger" href='<?php echo "https://www.google.com/maps?q=" . urlencode($formjobaddress); ?>' target="_blank"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View Map</a>
+							<a class="btn btn-sm btn-danger" href='<?php echo "https://www.google.com/maps?q=" . urlencode($formjobaddress); ?>' target="_blank"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View Map</a>
 							<?php if($_SESSION['is_draftsman'] == 1){ ?><button class="btn btn-primary btn-sm ml-3">Create Sub Job</button> <?php } ?>
 						</div>
 					</div>
@@ -243,7 +243,7 @@
 									</div> -->
 									<?php } ?>
 									<div class="col-md-2">
-										<btn class="btn btn-lg btn-success l-75" aria-hidden="true" data-toggle="modal" data-target="#newRoom" >Add Room</btn>
+										<btn class="btn btn-lg btn-success " aria-hidden="true" data-toggle="modal" data-target="#newRoom" >Add Room</btn>
 										
 									</div>
 									<?php
@@ -263,8 +263,11 @@
 
 									if ($_SESSION['is_JobApprove'] == 1 && $signOff == 1){ ?>
 
+									<div class="col-md-2">
+										<btn class="btn btn-lg btn-info sing-off-all-btn text-right" >Sign Off All</btn>
+									</div>
 									<div class="col-md-1">
-										<btn class="btn btn-lg btn-info sing-off-all-btn text-right l-70" >Sign Off All</btn>
+										<btn class="btn btn-lg btn-info sing-off-alert-btn text-right " >Sign Off Alert All</btn>
 									</div>
 									
 								<?php } ?>
@@ -472,6 +475,7 @@
 													if ($_SESSION['is_JobApprove'] == 1 && $row['is_off'] == 0 && empty($row['DateCompleted'])){
 											?>
 														<button class="sing-off-btn btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sign Off</button>
+														<button class="sing-off-btn-alert btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sign Off Alert</button>
 											<?php } ?>	
 											<?php
 													if ($_SESSION['is_JobApprove'] == 1){
@@ -743,7 +747,7 @@
 																	<input type="hidden" id="taskid" name="taskid" value="<?php if (isset($row['TaskID'])) { echo $row['TaskID']; } ?>">
 																	<input type="hidden" id="action" name="action" value="savechecklist">
 																	
-																	<p>Tick boxes if "yes" or "not applicable"</p>
+																	<!-- <p>Tick boxes if "yes" or "not applicable"</p>
 																	<div class="form-group">
 																		<label>
 																			<input name="inputCopyPlans" type="checkbox" value="1" required <?php if (isset($row['CopyPlans'])) { if ($row['CopyPlans']==1){ echo " CHECKED"; } } ?>> Copy of builder's plans and our plans - second drawer
@@ -858,7 +862,11 @@
 																		<label>
 																			<input name="inputTemplates" type="checkbox" value="1" required <?php if (isset($row['Templates'])) { if ($row['Templates']==1){ echo " CHECKED"; } } ?>> Templates (if required)
 																		</label>
-																	</div>																																										
+																	</div> -->																																										
+																	<div class="form-group">
+																		<label for="inputMissingItems">ToDo Items</label>
+																		<textarea class="form-control" id="inputApplicableItems" name="inputApplicableItems" rows="6"><?php if (isset($row['Applicabletems'])) { echo htmlspecialchars($row['Applicabletems'], ENT_QUOTES); } ?></textarea>
+																	</div>
 																	<div class="form-group">
 																		<label for="inputMissingItems">Missing Items</label>
 																		<textarea class="form-control" id="inputMissingItems" name="inputMissingItems" rows="6"><?php if (isset($row['MissingItems'])) { echo htmlspecialchars($row['MissingItems'], ENT_QUOTES); } ?></textarea>
@@ -1808,6 +1816,26 @@
 				}
 			});
 		});
+
+	$(document).on('click', '.sing-off-btn-alert', function(){ 
+			var jobid = $('#jobid').val();
+			var taskid = $(this).val();
+
+			$.confirm({
+				text: "Are you sure you want to sign off alert?",
+				confirm: function() {
+					$.post("job-draft-crud.php", { action: 'singOffAlert', jobid: jobid, taskid: taskid }) 
+					.done(function(data){
+						var response = jQuery.parseJSON(data);
+						//location.reload();
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		});
+
 	$(document).on('click', '.delete-room-btn', function(){ 
 			var jobid = $('#jobid').val();
 			var taskid = $(this).val();
@@ -1854,6 +1882,24 @@
 				text: "Are you sure you want to sign off?",
 				confirm: function() {
 					$.post("job-draft-crud.php", { action: 'singOffAll', jobid: jobid}) 
+					.done(function(data){
+						var response = jQuery.parseJSON(data);
+						location.reload();
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		});
+
+	$(document).on('click', '.sing-off-alert-btn', function(){ 
+			var jobid = $('#jobid').val();
+
+			$.confirm({
+				text: "Are you sure you want to sign off?",
+				confirm: function() {
+					$.post("job-draft-crud.php", { action: 'singOffAlertAll', jobid: jobid}) 
 					.done(function(data){
 						var response = jQuery.parseJSON(data);
 						location.reload();
