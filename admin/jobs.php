@@ -15,7 +15,7 @@ include("header.php");
 
 ?>
 
-<div class="page-header">
+<div class="page-header" style="padding-bottom:30px;">
     <h1>
       <span id="pageTitle">Jobs</span>
       <a type="button" href="projects.php" id="add-btn-project" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Project</a>
@@ -34,15 +34,44 @@ include("header.php");
 
             <div class="form-group">
             	
-            	<div class="col-sm-3">
+            	<div class="col-sm-2">
                 	<label for="searchJobNo">Job No.</label>
                 	<input type="text" class="form-control" id="searchJobNo" name="searchJobNo" placeholder="Job No">
                 </div>
                 
-            	<div class="col-sm-9">
+            	<div class="col-sm-4">
                 	<label for="searchJobNo">Address</label>
                 	<input type="text" class="form-control" id="searchAddress" name="searchAddress" placeholder="Address">
-                </div>                
+                </div>
+                <div class="col-sm-3">
+				  <label for="projectId">Select Project:</label>
+				  <select class="form-control"  name="projectId">
+				    <option value="">None</option>
+						<?php
+							$query = "SELECT ProjectID, ProjectName FROM tblproject  ORDER BY ProjectName";
+							$result = $mysqli->query($query);			
+
+							while($row = $result->fetch_array())
+							{	
+								if (isset($projectId))
+									$selected = ($row['ProjectID'] == $projectId) ? " SELECTED" : ""; 	
+								else
+									$selected = "";
+
+								echo "<option value=" . $row['ProjectID'] . " $selected>" . $row['ProjectName'] . "</option>";
+							}
+						?>
+				  </select>
+				</div>               
+	            <div class="col-sm-3">
+					  <label for="projectId">Status:</label>
+					  <select class="form-control"  name="status">
+					    <option value="">None</option>
+					    <option value="1">Open</option>
+					    <option value="2">Close</option>
+					    <option value="99">All</option>
+					  </select>
+				</div>               
             </div>
 			
             <button type="submit" id="search-btn" class="btn btn-info">Search</button>
@@ -71,9 +100,12 @@ include("header.php");
 	
 	$(document).ready(function(){
 
-		showJobs(1);
 		var currentPage = 1;
 		var currentJobID = 0;
+		var type = 'JobID';
+		var sort = 'ASC';
+		var ID = 'JobIDASC';
+		showJobs(1,type,sort,ID);
 		
 		$('#add-btn').click(function(){
 			addEditJob("add", 0);
@@ -83,16 +115,16 @@ include("header.php");
 		$('#reset-btn').click(function(){
 			$('#alert').hide();
 			$('#searchForm')[0].reset();
-			showJobs(1);
+			showJobs(1,type,sort,ID);
 		});
 			
 		$('#search-btn').click(function(){
-			showJobs(1);
+			showJobs(1,type,sort,ID);
 			$('#alert').hide();
 		});
 		
 
-		function showJobs(page){
+		function showJobs(page,type=null,sort=null,ID=null){
 			$('#loader-image').show();
 			changePageTitle("Jobs");
 			$('#add-btn').show();
@@ -100,10 +132,13 @@ include("header.php");
 			$('#page-content').hide();
 			$('#alert').hide();
 			
-			$('#page-content').load('job-list.php', $('#searchForm').serialize() + "&page=" + page, function(){ 
+			$('#page-content').load('job-list.php', $('#searchForm').serialize() + "&page=" + page + "&type=" + type + "&sort=" + sort, function(){ 
 				$('#loader-image').hide(); 
 				$('#page-content').fadeIn('slow');
 				$('[data-toggle="tooltip"]').tooltip();
+				$('.fa-sort-asc').css('color','');
+				$('.fa-sort-desc').css('color','');
+				$('#'+ID).css('color','red');
 			});
 		}
 		
@@ -173,7 +208,7 @@ include("header.php");
 
 				$('#return-btn').click(function(){
 					$('#page-content').hide();
-					showJobs(currentPage);
+					showJobs(currentPage,type,sort,ID);
 				});
 
 				if (tab)
@@ -213,7 +248,7 @@ include("header.php");
 				
 				$('#return-btn').click(function(){
 					$('#page-content').hide();
-					showJobs(currentPage);
+					showJobs(currentPage,type,sort,ID);
 				});
 
 			});
@@ -247,7 +282,7 @@ include("header.php");
 			clickedPage = clickedPage.substring((pageind+5));
 			
 			currentPage = clickedPage;
-			showJobs(clickedPage);
+			showJobs(clickedPage,type,sort,ID);
 		});
 		
 		
@@ -261,6 +296,28 @@ include("header.php");
 			showJobHistory($(this).val());
 		});
 
+		$(document).on('click', '.fa-sort-asc', function(){ 
+			
+			var filtertype = $(this).attr('data-name');
+			var filtersort = $(this).attr('data-sort');
+			type = filtertype;
+			sort = filtersort;
+			ID = filtertype+""+filtersort;
+			showJobs(currentPage,type,sort,ID);
+			
+		});
+
+		$(document).on('click', '.fa-sort-desc', function(){ 
+			
+			var filtertype = $(this).attr('data-name');
+			var filtersort = $(this).attr('data-sort');
+			type = filtertype;
+			sort = filtersort;
+			ID = filtertype+""+filtersort;
+			showJobs(currentPage,type,sort,ID);
+			
+		});
+
 		function deleteJob(deleteid){
 			$.confirm({
 				text: "Are you sure you want to delete this job?",
@@ -270,7 +327,7 @@ include("header.php");
 					
 					$.post("job-crud.php", { action: 'delete', deleteid: deleteid }) 
 						.done(function(data){
-							showJobs(currentPage);
+							showJobs(currentPage,type,sort,ID);
 							$('#alert').html(data);
 							$('#alert').show();
 					});
@@ -576,6 +633,7 @@ include("header.php");
 				}
 			});
 		}
+		
 
 		$.validator.setDefaults({
 			highlight: function(element) {
