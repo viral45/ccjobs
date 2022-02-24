@@ -18,6 +18,7 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Schedule</span>
+      <button type="button" id="schedule-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Staff Add</button>
       <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
     </h1>
     <!-- <ul>
@@ -54,6 +55,27 @@ include("header.php");
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Staff add/edit modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="staff-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+	  	<div id="staff-modal-alert"></div>
+	  	<div id='staff-modal-content'></div>
+	  	<div id='staff-modal-loader-image'><img src='img/ajax-loader.gif' /> &nbsp;LOADING</div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Staff add/edit modal -->
+
+
 <script type='text/javascript'>
 
 	$('form').on('submit', function(e){
@@ -68,6 +90,10 @@ include("header.php");
 
 		$('#add-btn').click(function(){
 			addEditSchedule("add", 0);
+		});
+
+		$('#schedule-staff-add').click(function(){
+			ScheduleStaffAddEdit("add", 0);
 		});
 
 		function showWeek(weekStart){
@@ -267,6 +293,38 @@ include("header.php");
 
     
 	});
+
+
+
+	function ScheduleStaffAddEdit(action, scheduleid)
+	{
+		$('#staff-modal-content').load('schedule-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function(){ 
+			if (action == "add")
+				$("#staff-modal").find('.modal-title').text('Add Staff Entry')
+			else if (action == "edit")
+				$("#staff-modal").find('.modal-title').text('Edit Staff Entry')
+
+			$('#staff-modal-loader-image').hide(); 
+			$('#staff-modal-content').fadeIn('slow');
+			
+			$("#staff-form").validate({
+				rules: {
+					inputJobID: {
+						required: "#inputDescription:blank"
+					},
+					inputDescription: {
+						required: "#inputJobID:blank"
+					}
+				}
+			});
+			
+			$('input[name="inputScheduleDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+
+
+			$('#staff-modal').modal('show');
+
+		});
+	}
 	
 </script>
 

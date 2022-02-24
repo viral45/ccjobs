@@ -18,6 +18,7 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Delivery Schedule</span>
+      <button type="button" id="delivery-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Staff Add</button>
       <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
     </h1>
 </div>
@@ -45,6 +46,27 @@ include("header.php");
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Staff add/edit modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="delivery-staff-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+	  	<div id="delivery-staff-modal-alert"></div>
+	  	<div id='delivery-staff-modal-content'></div>
+	  	<div id='delivery-staff-modal-loader-image'><img src='img/ajax-loader.gif' /> &nbsp;LOADING</div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Staff add/edit modal -->
+
+
 <script type='text/javascript'>
 
 	$('form').on('submit', function(e){
@@ -60,6 +82,12 @@ include("header.php");
 		$('#add-btn').click(function(){
 			addEditDelivery("add", 0);
 		});
+
+		$('#delivery-staff-add').click(function(){
+			DeliveryStaffAddEdit("add", 0);
+		});
+
+
 
 		function showWeek(weekStart){
 			$('#loader-image').show();
@@ -253,7 +281,58 @@ include("header.php");
 
     
 	});
-	
+
+	function DeliveryStaffAddEdit(action, scheduleid)
+	{
+		$('#delivery-staff-modal-content').load('delivery-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
+		{ 
+			if (action == "add")
+				$("#delivery-staff-modal").find('.modal-title').text('Add Staff Entry')
+			else if (action == "edit")
+				$("#delivery-staff-modal").find('.modal-title').text('Edit Staff Entry')
+
+			$('#delivery-staff-modal-loader-image').hide(); 
+			$('#delivery-staff-modal-content').fadeIn('slow');
+			
+			$("#delivery-form").validate({
+				rules: {
+					inputJobID: {
+						required: "#inputDescription:blank"
+					},
+					inputDescription: {
+						required: "#inputJobID:blank"
+					}
+				}
+			});
+			$('.selectpicker').selectpicker({liveSearch: true});
+			$('input[name="inputDeliveryDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+			
+			$('#delete-btn').click(function(){
+				deleteJob($(this).val());
+			});
+
+			$('#viewjob-btn').click(function(){
+				//alert($("#inputJobID").val());
+				if ($("#inputJobID").val() != "")
+					window.open('../job.php?jobid='+$("#inputJobID").val()+'#installer', '_blank');
+
+			});
+
+			//$('#inputDescription').prop('disabled', false);
+
+
+			if ($('#inputJobID').val() != ''){
+				$.post("schedule-crud.php", { action: 'getbuilder', jobid: $('#inputJobID').val() }) 
+					.done(function(data){
+						$('#inputBuilder').val(data);
+				});
+			}
+
+			$('#delivery-staff-modal').modal('show');
+
+		});
+	}
+
 </script>
 
 <?php include("footer.php"); ?>

@@ -18,6 +18,7 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Stone Schedule</span>
+      <button type="button" id="drawer-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Staff Add</button>
       <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
     </h1>
 </div>
@@ -45,6 +46,26 @@ include("header.php");
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Staff add/edit modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="stone-staff-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+	  	<div id="stone-staff-modal-alert"></div>
+	  	<div id='stone-staff-modal-content'></div>
+	  	<div id='stone-staff-modal-loader-image'><img src='img/ajax-loader.gif' /> &nbsp;LOADING</div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Staff add/edit modal -->
+
 <script type='text/javascript'>
 
 	$('form').on('submit', function(e){
@@ -59,6 +80,10 @@ include("header.php");
 
 		$('#add-btn').click(function(){
 			addEditSchedule("add", 0);
+		});
+
+		$('#drawer-staff-add').click(function(){
+			StoneStaffAddEdit("add", 0);
 		});
 
 		function showWeek(weekStart){
@@ -258,6 +283,37 @@ include("header.php");
 
     
 	});
+
+
+	function StoneStaffAddEdit(action, scheduleid)
+	{
+		$('#stone-staff-modal-content').load('stone-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
+		{ 
+			if (action == "add")
+				$("#stone-staff-modal").find('.modal-title').text('Add Staff Entry')
+			else if (action == "edit")
+				$("#stone-staff-modal").find('.modal-title').text('Edit Staff Entry')
+
+			$('#stone-staff-modal-loader-image').hide(); 
+			$('#stone-staff-modal-content').fadeIn('slow');
+			
+			$("#stone-form").validate({
+				rules: {
+					inputJobID: {
+						required: "#inputDescription:blank"
+					},
+					inputDescription: {
+						required: "#inputJobID:blank"
+					}
+				}
+			});
+			$('.selectpicker').selectpicker({liveSearch: true});
+			$('input[name="inputStoneDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+
+			$('#stone-staff-modal').modal('show');
+
+		});
+	}
 	
 </script>
 
