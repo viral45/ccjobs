@@ -1008,7 +1008,7 @@
 																	<input type="hidden" id="taskid" name="taskid" value="<?php if (isset($row['TaskID'])) { echo $row['TaskID']; } ?>">
 																	<input type="hidden" id="action" name="action" value="savechecklist">
 																	
-																	<p>Tick boxes if "yes" or "not applicable"</p>
+																	<!-- <p>Tick boxes if "yes" or "not applicable"</p>
 																	<div class="form-group">
 																		<label>
 																			<input name="inputGapped" type="checkbox" value="1" required <?php if (isset($row['Gapped'])) { if ($row['Gapped']==1){ echo " CHECKED"; } } ?>> Gapped
@@ -1048,6 +1048,10 @@
 																		<label>
 																			<input name="inputCabinetsCleaned" type="checkbox" value="1" required <?php if (isset($row['CabinetsCleaned'])) { if ($row['CabinetsCleaned']==1){ echo " CHECKED"; } } ?>> Cabinets all cleaned
 																		</label>
+																	</div> -->
+																	<div class="form-group">
+																		<label for="inputMissingItems">ToDo Items</label>
+																		<textarea class="form-control" id="inputApplicableItems" name="inputApplicableItems" rows="6"><?php if (isset($row['Applicabletems'])) { echo htmlspecialchars($row['Applicabletems'], ENT_QUOTES); } ?></textarea>
 																	</div>																																																									
 																	<div class="form-group">
 																		<label for="inputMissingItems">Missing Items</label>
@@ -1945,7 +1949,7 @@
 	$(document).on('click', '.create_sub_job', function(){ 
 		var jobid = $('#jobid').val();
 		$.confirm({
-			text: "Are you sure you want to sign off?",
+			text: "Are you sure you want to create new sub job?",
 			confirm: function() {
 				$.post("job-draft-crud.php", { action: 'CreateSubJob', jobid: jobid}) 
 				.done(function(data){

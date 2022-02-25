@@ -76,6 +76,13 @@ if(!empty($_REQUEST['projectId']))
                             <i class="fa fa-sort-desc" id="JobIDDESC" data-name="JobID" data-sort="DESC" aria-hidden="true"></i>
                         </span>
                     </th>
+                    <th nowrap>
+                        Sub job No. 
+                        <span class="sort-icon">
+                            <i class="fa fa-sort-asc" id="subJobIdASC" data-name="subJobId" data-sort="ASC" style="color:red;" aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="subJobIdDESC" data-name="subJobId" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
                     <th>Address
                         <span class="sort-icon"> 
                             <i class="fa fa-sort-asc" id="JobAddressASC" data-name="JobAddress" data-sort="ASC"  aria-hidden="true"></i>
@@ -107,7 +114,7 @@ if(!empty($_REQUEST['projectId']))
                 
                 <?php 
                    
-                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure,status FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
+                $query = "SELECT JobID,subJobId, ProjectID, JobAddress, DateEntered, DateMeasure,status FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
 
                 $result = $mysqli->query($query);
                 $getProjectName = '';
@@ -140,6 +147,7 @@ if(!empty($_REQUEST['projectId']))
                 ?>
                     <tr>
                         <td ><?php echo $row['JobID'] ?></td>
+                        <td ><?php echo $row['subJobId'] ?></td>
                         <td ><?php echo $row['JobAddress'] ?></td>                       
                         <td><?php echo date("d-m-Y", strtotime($row['DateEntered'])) ?></td>
                         <td>

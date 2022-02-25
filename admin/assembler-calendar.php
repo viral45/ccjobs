@@ -91,16 +91,33 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
                                     $statusresult = $mysqli->query($statusquery);
                                     $statusrow = $statusresult->fetch_array();
 
-                                    $incompletequery = "SELECT Count(JobID) As JobCount FROM tblJobTask WHERE JobID = " . $schedulerow['JobID'] . " AND tblJobTask.DateCompleted IS NULL";
+                                    $incompletequery = "SELECT Count(JobID) As JobCount FROM tblJobTask WHERE JobID = " . $schedulerow['JobID']. " AND tblJobTask.DateCompleted IS NULL" ;
                                     $incompleteresult = $mysqli->query($incompletequery);
                                     $incompleterow = $incompleteresult->fetch_array();
+
+                                    $Color_query = "SELECT  MissingItems as MissingItemsColor FROM tblJobTask WHERE JobID = " . $schedulerow['JobID'] ;
+                                    $Color_result = $mysqli->query($Color_query);
+                                    $Color_row = $Color_result->fetch_array();
+                                    
                                     
                                     if ($statusrow['SumWeight'] < 1 || $incompleterow['JobCount'] > 0)
                                         $alertstring = "<span class='fa fa-1x fa-warning text-danger'></span>";
                                     else   
                                         $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
 
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['AssemblerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['AssemblerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#assembler' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
+                                    if($Color_result == null)
+                                    {
+                                        if($Color_row['MissingItemsColor'] == null)
+                                            $colorPart = 'alert-success';
+                                        else
+                                            $colorPart = 'alert-warning';
+                                    }else
+                                    {
+
+                                            $colorPart = 'alert-success';
+                                    }
+
+                                    echo "<div class='alert ".$colorPart."  calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['AssemblerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['AssemblerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#assembler' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
                                         
                                 }
                                 else{

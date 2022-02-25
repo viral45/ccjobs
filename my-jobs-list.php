@@ -2,8 +2,9 @@
 include("functions.php");
 
 sec_session_start();
-if(!isset($_SESSION['logged_in'])){
-	header("location:login.php");
+if(!isset($_SESSION['user_id'])){
+    header("location:index.php");
+    die();
 }
 
 include("config.php"); 
