@@ -95,7 +95,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
                                                 $colorPart = 'alert-success';
                                         }    
 
-                                        echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#installer' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
+                                        echo "<div class='alert ".$colorPart." calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#installer' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
                                             
                                     }
                                     else
