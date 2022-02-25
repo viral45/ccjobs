@@ -9,9 +9,9 @@ if(!isset($_SESSION['logged_in'])){
 include("config.php"); 
 
 ?>
-<form id='delivery-form' action='#' method='post'>
+<form id='delivery-staff-form' action='#' method='post'>
     <input type="hidden" id="action" name="action" value="<?php if (isset($_POST['action'])) { echo $_POST['action']; } ?>">
-    <input type="hidden" id="scheduleid" name="scheduleid" value="<?php if (isset($_POST['scheduleid'])) { echo $_POST['scheduleid']; } ?>">
+    <input type="hidden" id="deliveryid" name="deliveryid" value="<?php if (isset($_POST['deliveryid'])) { echo $_POST['deliveryid']; } ?>">
     
 	<div class="form-group">
 		<label for="inputJobID">Job</label>

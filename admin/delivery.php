@@ -142,11 +142,31 @@ include("header.php");
 				});
 
 				$('.add-entry-btn').click(function(){
-					
 					var deliverydate = $(this).attr("data-delivery-date");
-
 					addEditDelivery("add", 0, deliverydate);
+				});
 
+
+
+				$('.delete-delivery-staff-btn').click(function(){
+					deleteStaffDelivery($(this).val());
+				});
+
+				$('.delivery-week-btn').click(function(){
+					event.preventDefault();
+					currentWeekStart = $(this).val();
+					showWeek($(this).val());
+				});
+
+				$('.delivery-staff-calendar-entry').click(function () {
+					var deliveryid = $(this).attr('data-delivery-id');
+					DeliveryStaffAddEdit("edit", deliveryid);
+				});
+
+				$('.delivery-add-entry-btn').click(function(){
+					var deliverydate = $(this).attr("data-delivery-date");
+					var userid = $(this).val();
+					DeliveryStaffAddEdit("add", 0, deliverydate, userid);
 				});
 
 			});
@@ -282,9 +302,9 @@ include("header.php");
     
 	});
 
-	function DeliveryStaffAddEdit(action, scheduleid)
+	function DeliveryStaffAddEdit(action, deliveryid)
 	{
-		$('#delivery-staff-modal-content').load('delivery-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
+		$('#delivery-staff-modal-content').load('delivery-staff-add-edit.php', { action: action, deliveryid: deliveryid }, function()
 		{ 
 			if (action == "add")
 				$("#delivery-staff-modal").find('.modal-title').text('Add Staff Entry')
@@ -294,7 +314,7 @@ include("header.php");
 			$('#delivery-staff-modal-loader-image').hide(); 
 			$('#delivery-staff-modal-content').fadeIn('slow');
 			
-			$("#delivery-form").validate({
+			$("#delivery-staff-form").validate({
 				rules: {
 					inputJobID: {
 						required: "#inputDescription:blank"
@@ -312,26 +332,62 @@ include("header.php");
 			});
 
 			$('#viewjob-btn').click(function(){
-				//alert($("#inputJobID").val());
 				if ($("#inputJobID").val() != "")
 					window.open('../job.php?jobid='+$("#inputJobID").val()+'#installer', '_blank');
 
 			});
 
-			//$('#inputDescription').prop('disabled', false);
-
-
-			if ($('#inputJobID').val() != ''){
-				$.post("schedule-crud.php", { action: 'getbuilder', jobid: $('#inputJobID').val() }) 
+			if (action == "edit")
+			{
+				alert(deliveryid);
+				$.post("delivery-staff-crud.php", { action: 'edit', 'deliveryid': deliveryid }) 
 					.done(function(data){
-						$('#inputBuilder').val(data);
+					var response = JSON.parse(data);
+					$("#inputJobID").val(response.JobID).trigger('change');
+					$("#inputDeliveryDate").val(response.DeliveryDate);
+					$("#inputDescription").val(response.Description);
+					$("#inputNotes").val(response.Notes);
+					$("#action").val('update');
 				});
 			}
+
 
 			$('#delivery-staff-modal').modal('show');
 
 		});
 	}
+
+		$(document).on('submit', '#delivery-staff-form', function() {
+			$('#modal-content').hide();
+			$('#modal-loader-image').show();
+			 
+			$.post("delivery-staff-crud.php", $(this).serialize())
+				.done(function(data) {
+					$('#delivery-staff-modal').modal('hide');
+					showWeek(currentWeekStart);
+					
+				});
+					 
+			return false;
+		});
+		
+		
+		function deleteStaffDelivery(deleteid){
+			$.confirm({
+				text: "Are you sure you want to delete this delivery entry?",
+				confirm: function() {			
+					
+					$.post("delivery-staff-crud.php", { action: 'delete', deleteid: deleteid }) 
+						.done(function(data){
+							$('#delivery-staff-modal').modal('hide');
+							showWeek(currentWeekStart);
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		}
 
 </script>
 

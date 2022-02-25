@@ -43,32 +43,44 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                 <?php 
                     foreach ($datearray as $day){ 
                         echo "<td class='entry' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
-                        echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' data-delivery-date='$day'>+</button>";
-                        $deliveryquery = "SELECT tblDelivery.DeliveryID, tblJob.JobAddress, tblJob.JobID, tblDelivery.Description FROM tblJob RIGHT JOIN tblDelivery ON tblJob.JobID = tblDelivery.JobID WHERE DeliveryDate = '" . date('Y-m-d',strtotime($day)) . "' ORDER BY SortOrder";
+                        $deliveryquery = "SELECT tblDelivery.DeliveryID, tblJob.JobAddress, tblJob.JobID, tblDelivery.Description, tblDelivery.ScheduleType FROM tblJob RIGHT JOIN tblDelivery ON tblJob.JobID = tblDelivery.JobID WHERE DeliveryDate = '" . date('Y-m-d',strtotime($day)) . "' ORDER BY SortOrder";
                         $deliveryresult = $mysqli->query($deliveryquery);
                         
-                        while($deliveryrow = $deliveryresult->fetch_array()){
-                            if (!empty($deliveryrow['JobID'])){
-                                //check assembly completed
-                                $statusquery = "SELECT SUM(Weight) As SumWeight FROM tblJobTask INNER JOIN tblTask ON tblJobTask.TaskID = tblTask.TaskID WHERE JobID = " . $deliveryrow['JobID'] . " AND tblJobTask.DateCompleted IS NOT NULL";
-                                $statusresult = $mysqli->query($statusquery);
-                                $statusrow = $statusresult->fetch_array();
+                        while($deliveryrow = $deliveryresult->fetch_array())
+                        {
+                            if($deliveryrow['ScheduleType']==1)
+                            {
+                                echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' data-delivery-date='$day'>+</button>";
+                                if (!empty($deliveryrow['JobID']))
+                                {
+                                    //check assembly completed
+                                    $statusquery = "SELECT SUM(Weight) As SumWeight FROM tblJobTask INNER JOIN tblTask ON tblJobTask.TaskID = tblTask.TaskID WHERE JobID = " . $deliveryrow['JobID'] . " AND tblJobTask.DateCompleted IS NOT NULL";
+                                    $statusresult = $mysqli->query($statusquery);
+                                    $statusrow = $statusresult->fetch_array();
 
-                                $incompletequery = "SELECT Count(JobID) As JobCount FROM tblJobTask WHERE JobID = " . $deliveryrow['JobID'] . " AND tblJobTask.DateCompleted IS NULL";
-                                $incompleteresult = $mysqli->query($incompletequery);
-                                $incompleterow = $incompleteresult->fetch_array();
-                                
-                                if ($statusrow['SumWeight'] < 1 || $incompleterow['JobCount'] > 0)
-                                    $alertstring = "<span class='fa fa-1x fa-warning text-danger'></span>";
-                                else   
-                                    $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
-
-                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$deliveryrow['JobID']."#installer' target='_blank>" . $alertstring . " " . $deliveryrow['JobAddress'] . "</a></div>";
+                                    $incompletequery = "SELECT Count(JobID) As JobCount FROM tblJobTask WHERE JobID = " . $deliveryrow['JobID'] . " AND tblJobTask.DateCompleted IS NULL";
+                                    $incompleteresult = $mysqli->query($incompletequery);
+                                    $incompleterow = $incompleteresult->fetch_array();
                                     
+                                    if ($statusrow['SumWeight'] < 1 || $incompleterow['JobCount'] > 0)
+                                        $alertstring = "<span class='fa fa-1x fa-warning text-danger'></span>";
+                                    else   
+                                        $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
+
+                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$deliveryrow['JobID']."#installer' target='_blank>" . $alertstring . " " . $deliveryrow['JobAddress'] . "</a></div>";
+                                        
+                                }
+                                else
+                                {
+                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $deliveryrow['Description'] . "</div>";                                    
+                                }  
                             }
-                            else{
-                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $deliveryrow['Description'] . "</div>";                                    
-                            }                           
+                            else
+                            {
+                                echo "<button class='btn btn-xs btn-primary pull-right delivery-staff-calendar-entry' data-delivery-id='" . $deliveryrow['DeliveryID'] . "' data-delivery-date='$day'>+</button>";
+
+                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn delete-delivery-staff-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $deliveryrow['Description'] . "</div>";      
+                            }                         
                         }
                         
                         echo "</td>";              

@@ -11,26 +11,27 @@ include("config.php");
 if (isset($_POST['action'])){	
 	
 	//add a schedule entry
-	if ($_POST['action'] == "add"){
-	
-		$userid = $_POST['inputUserID'];
-		$ScheduleType = 1;
-		$jobid = (!empty($_POST['inputJobID'])) ? $_POST['inputJobID'] : NULL;
+	if ($_POST['action'] == "add")
+	{
 		$description = $_POST['inputDescription'];
-		$scheduledate = (!empty($_POST['inputScheduleDate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['inputScheduleDate']))) : NULL;
+		$ScheduleType = 2;
+		$jobid = (!empty($_POST['inputJobID'])) ? $_POST['inputJobID'] : NULL;
+		$deliverydate = (!empty($_POST['inputDeliveryDate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['inputDeliveryDate']))) : NULL;
 		$notes = $_POST['inputNotes'];
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tblSchedule (UserID, JobID, Description, ScheduleDate, Notes,ScheduleType) VALUES (?, ?, ?, ?, ?,?)");
-		$insert_stmt->bind_param('sisssi', $userid, $jobid, $description, $scheduledate, $notes,$ScheduleType); 
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblDelivery (JobID, Description, DeliveryDate, Notes, ScheduleType) VALUES (?, ?, ?, ?, ?)");
+		$insert_stmt->bind_param('isssi', $jobid, $description, $deliverydate, $notes, $ScheduleType); 
 		$insert_stmt->execute();
-				
+	
+		print_r($insert_stmt);die;
+
 		if ($insert_stmt->affected_rows != -1){
-			$data['msg'] = "<div class='alert alert-success' role='alert'>The schedule entry was added successfully.</div>";
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The delivery staff entry was added successfully.</div>";
 			$data['last_insert_id'] = $insert_stmt->insert_id;
 			$data['action'] = "edit";
 		}
 		else{
-			$data['msg'] = "<div class='alert alert-danger' role='alert'>The schedule entry could not be added</div>";
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The delivery staff entry could not be added</div>";
 			$data['action'] = "add";
 		}
 			
@@ -38,25 +39,50 @@ if (isset($_POST['action'])){
 	}
 	
 	//edit a schedule entry
-	if ($_POST['action'] == "edit"){
-		$scheduleid = $_POST['scheduleid'];
-		$userid = $_POST['inputUserID'];
+	if ($_POST['action'] == "edit")
+	{
+		$deliveryid = $_POST['deliveryid'];
+		$deliveryresult = "SELECT * FROM tblDelivery WHERE DeliveryID = ".$deliveryid; 
+		$deliveryresult_single = $mysqli->query($deliveryresult);
+		$delivery_row = $deliveryresult_single->fetch_array();
+		if ($delivery_row['DeliveryID'] != '' && $delivery_row['DeliveryID'] != 0)
+		{
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The delivery staff entry was edited successfully.</div>";
+			$data['DeliveryID'] = $delivery_row['DeliveryID'];
+			$data['JobID'] = $delivery_row['JobID'];
+			$data['Description'] = $delivery_row['Description'];
+			$data['DeliveryDate'] = !empty($delivery_row['DeliveryDate']) ? date('d-m-Y',strtotime($delivery_row['DeliveryDate'])) : "";
+			$data['Notes'] = $delivery_row['Notes'];
+		}
+		else
+		{
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The delivery staff entry could not be edited.</div>";
+			$data['last_insert_id'] = $deliveryid;
+		}
+		$data['action'] = "edit";
+		echo json_encode($data);
+	}
+
+	//add a schedule entry
+	if ($_POST['action'] == "update")
+	{
+		$deliveryid = $_POST['deliveryid'];
 		$jobid = (!empty($_POST['inputJobID'])) ? $_POST['inputJobID'] : NULL;
 		$description = $_POST['inputDescription'];
-		$scheduledate = (!empty($_POST['inputScheduleDate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['inputScheduleDate']))) : NULL;
+		$deliverydate = (!empty($_POST['inputDeliveryDate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['inputDeliveryDate']))) : NULL;
 		$notes = $_POST['inputNotes'];
 
-		$update_stmt = $mysqli->prepare("UPDATE tblSchedule SET UserID = ?, JobID = ?, Description = ?, ScheduleDate = ?, Notes = ? WHERE ScheduleID = ?"); 
-		$update_stmt->bind_param('sisssi', $userid, $jobid, $description, $scheduledate, $notes, $scheduleid); 
+		$update_stmt = $mysqli->prepare("UPDATE tblDelivery SET JobID = ?, Description = ?, DeliveryDate = ?, Notes = ? WHERE DeliveryID = ?"); 
+		$update_stmt->bind_param('isssi',  $jobid, $description, $deliverydate, $notes, $deliveryid); 
 		$update_stmt->execute();
 		
 		if ($update_stmt->affected_rows != -1){
-			$data['msg'] = "<div class='alert alert-success' role='alert'>The schedule staff entry was edited successfully.</div>";
-			$data['last_insert_id'] = $scheduleid;
+			$data['msg'] = "<div class='alert alert-success' role='alert'>The schedule entry was updated successfully.</div>";
+			$data['last_insert_id'] = $deliveryid;
 		}
 		else{
-			$data['msg'] = "<div class='alert alert-danger' role='alert'>The schedule staff entry could not be edited.</div>";
-			$data['last_insert_id'] = $scheduleid;
+			$data['msg'] = "<div class='alert alert-danger' role='alert'>The schedule entry could not be updated.</div>";
+			$data['last_insert_id'] = $deliveryid;
 		}
 		
 		$data['action'] = "edit";
@@ -113,9 +139,9 @@ if (isset($_POST['action'])){
 			$stmt->execute();
 			
 			if ($stmt->affected_rows != -1)
-				echo "<div class='alert alert-success' role='alert'>The selected schedule entry was deleted successfully</div>";
+				echo "<div class='alert alert-success' role='alert'>The selected schedule staff entry was deleted successfully</div>";
 			else
-				echo "<div class='alert alert-danger' role='alert'>The selected schedule entry could not be deleted</div>";
+				echo "<div class='alert alert-danger' role='alert'>The selected schedule staff entry could not be deleted</div>";
 				
 			$stmt->close();
 		}
