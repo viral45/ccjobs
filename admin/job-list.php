@@ -26,6 +26,7 @@ else
 
 if (!empty($_REQUEST['searchJobNo'])){	
 	$where .= " AND JobID LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchJobNo']) . "%'";
+    $where .= " OR ParentJobId LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchJobNo']) . "%'";
 }
 
 if (!empty($_REQUEST['searchAddress'])){	
