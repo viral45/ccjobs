@@ -158,16 +158,16 @@ include("header.php");
 					showWeek($(this).val());
 				});
 
-				$('.staff-edit').dblclick(function () {
+				$('.staff-delivery-calendar-edit').dblclick(function () {
 					var deliveryid = $(this).attr('data-delivery-id');
 					DeliveryStaffAddEdit("edit", deliveryid);
 				});
-
+				/*
 				$('.delivery-add-entry-btn').click(function(){
 					var deliverydate = $(this).attr("data-delivery-date");
 					var userid = $(this).val();
 					DeliveryStaffAddEdit("add", 0, deliverydate, userid);
-				});
+				});*/
 
 			});
 		}
@@ -298,64 +298,59 @@ include("header.php");
 		$.validator.methods.date = function (value, element) {
 			return this.optional(element) || moment(value, 'DD/MM/YYYY').isValid();
 		};
+		function DeliveryStaffAddEdit(action, deliveryid)
+		{
+			$('#delivery-staff-modal-content').load('delivery-staff-add-edit.php', { action: action, deliveryid: deliveryid }, function()
+			{ 
+				if (action == "add")
+					$("#delivery-staff-modal").find('.modal-title').text('Add Staff Entry')
+				else if (action == "edit")
+					$("#delivery-staff-modal").find('.modal-title').text('Edit Staff Entry')
 
-    
-	});
-
-	function DeliveryStaffAddEdit(action, deliveryid)
-	{
-		$('#delivery-staff-modal-content').load('delivery-staff-add-edit.php', { action: action, deliveryid: deliveryid }, function()
-		{ 
-			if (action == "add")
-				$("#delivery-staff-modal").find('.modal-title').text('Add Staff Entry')
-			else if (action == "edit")
-				$("#delivery-staff-modal").find('.modal-title').text('Edit Staff Entry')
-
-			$('#delivery-staff-modal-loader-image').hide(); 
-			$('#delivery-staff-modal-content').fadeIn('slow');
-			
-			$("#delivery-staff-form").validate({
-				rules: {
-					inputJobID: {
-						required: "#inputDescription:blank"
-					},
-					inputDescription: {
-						required: "#inputJobID:blank"
+				$('#delivery-staff-modal-loader-image').hide(); 
+				$('#delivery-staff-modal-content').fadeIn('slow');
+				
+				$("#delivery-staff-form").validate({
+					rules: {
+						inputJobID: {
+							required: "#inputDescription:blank"
+						},
+						inputDescription: {
+							required: "#inputJobID:blank"
+						}
 					}
-				}
-			});
-			$('.selectpicker').selectpicker({liveSearch: true});
-			$('input[name="inputDeliveryDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
-			
-			$('#delete-btn').click(function(){
-				deleteJob($(this).val());
-			});
-
-			$('#viewjob-btn').click(function(){
-				if ($("#inputJobID").val() != "")
-					window.open('../job.php?jobid='+$("#inputJobID").val()+'#installer', '_blank');
-
-			});
-
-			if (action == "edit")
-			{
-				alert(deliveryid);
-				$.post("delivery-staff-crud.php", { action: 'edit', 'deliveryid': deliveryid }) 
-					.done(function(data){
-					var response = JSON.parse(data);
-					$("#inputJobID").val(response.JobID).trigger('change');
-					$("#inputDeliveryDate").val(response.DeliveryDate);
-					$("#inputDescription").val(response.Description);
-					$("#inputNotes").val(response.Notes);
-					$("#action").val('update');
 				});
-			}
+				$('.selectpicker').selectpicker({liveSearch: true});
+				$('input[name="inputDeliveryDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+				
+				$('#delivery-delete-btn').click(function(){
+					deleteStaffDelivery($(this).val());
+				});
+
+				$('#viewjob-btn').click(function(){
+					if ($("#inputJobID").val() != "")
+						window.open('../job.php?jobid='+$("#inputJobID").val()+'#installer', '_blank');
+
+				});
+
+				if (action == "edit")
+				{
+					$.post("delivery-staff-crud.php", { action: 'edit', 'deliveryid': deliveryid }) 
+						.done(function(data){
+						var response = JSON.parse(data);
+						$("#inputJobID").val(response.JobID).trigger('change');
+						$("#inputDeliveryDate").val(response.DeliveryDate);
+						$("#inputDescription").val(response.Description);
+						$("#inputNotes").val(response.Notes);
+						$("#action").val('update');
+					});
+				}
 
 
-			$('#delivery-staff-modal').modal('show');
+				$('#delivery-staff-modal').modal('show');
 
-		});
-	}
+			});
+		}
 
 		$(document).on('submit', '#delivery-staff-form', function() {
 			$('#modal-content').hide();
@@ -374,9 +369,8 @@ include("header.php");
 		
 		function deleteStaffDelivery(deleteid){
 			$.confirm({
-				text: "Are you sure you want to delete this delivery entry?",
+				text: "Are you sure you want to delete this delivery staff entry?",
 				confirm: function() {			
-					
 					$.post("delivery-staff-crud.php", { action: 'delete', deleteid: deleteid }) 
 						.done(function(data){
 							$('#delivery-staff-modal').modal('hide');
@@ -388,7 +382,7 @@ include("header.php");
 				}
 			});
 		}
-
+	});
 </script>
 
 <?php include("footer.php"); ?>

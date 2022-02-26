@@ -107,7 +107,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
                                 {
                                      echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' data-schedule-id='" . $schedulerow['ScheduleID'] . "' value='" . $row['UserID'] . "' data-schedule-date='$day'>+</button>";
 
-                                    echo "<div class='alert alert-warning staff-edit' data-action='delete' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-schedule-staff-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>";  
+                                    echo "<div class='alert alert-warning staff-schedule-edit' data-action='delete' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-schedule-staff-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>";  
                                 }
 
                             

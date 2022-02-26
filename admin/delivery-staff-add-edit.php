@@ -60,6 +60,6 @@ include("config.php");
 	<button type="button" id="return-btn" class="btn btn-warning"  data-dismiss="modal">Return</button>
 	
 	<?php if ($_POST['action'] == "edit"){ ?>
-	<button type="button" id="delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($formscheduleid)) { echo $formscheduleid; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
+	<button type="button" id="delivery-delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($_POST['deliveryid'])) { echo $_POST['deliveryid']; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
 	<?php } ?>
 </form>

@@ -9,9 +9,9 @@ if(!isset($_SESSION['logged_in'])){
 include("config.php"); 
 
 ?>
-<form id='assembler-form' action='#' method='post'>
+<form id='assembler-staff-form' action='#' method='post'>
     <input type="hidden" id="action" name="action" value="<?php if (isset($_POST['action'])) { echo $_POST['action']; } ?>">
-    <input type="hidden" id="scheduleid" name="scheduleid" value="<?php if (isset($_POST['scheduleid'])) { echo $_POST['scheduleid']; } ?>">
+    <input type="hidden" id="assemblerid" name="assemblerid" value="<?php if (isset($_POST['assemblerid'])) { echo $_POST['assemblerid']; } ?>">
     
 	<div class="form-group">
 		<label for="inputUserID">Employee</label>
@@ -54,6 +54,6 @@ include("config.php");
 	<button type="button" id="return-btn" class="btn btn-warning"  data-dismiss="modal">Return</button>
 	
 	<?php if ($_POST['action'] == "edit"){ ?>
-	<button type="button" id="delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($formscheduleid)) { echo $formscheduleid; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
+	<button type="button" id="assembler-delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($_POST['assemblerid'])) { echo $_POST['assemblerid']; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
 	<?php } ?>
 </form>

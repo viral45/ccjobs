@@ -14,13 +14,13 @@ if (isset($_POST['action'])){
 	if ($_POST['action'] == "add")
 	{
 		$description = $_POST['inputDescription'];
-		$ScheduleType = 2;
+		$DeliveryType = 2;
 		$jobid = (!empty($_POST['inputJobID'])) ? $_POST['inputJobID'] : NULL;
 		$deliverydate = (!empty($_POST['inputDeliveryDate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['inputDeliveryDate']))) : NULL;
 		$notes = $_POST['inputNotes'];
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tblDelivery (JobID, Description, DeliveryDate, Notes, ScheduleType) VALUES (?, ?, ?, ?, ?)");
-		$insert_stmt->bind_param('isssi', $jobid, $description, $deliverydate, $notes, $ScheduleType); 
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblDelivery (JobID, Description, DeliveryDate, Notes, DeliveryType) VALUES (?, ?, ?, ?, ?)");
+		$insert_stmt->bind_param('isssi', $jobid, $description, $deliverydate, $notes, $DeliveryType); 
 		$insert_stmt->execute();
 	
 		print_r($insert_stmt);die;
@@ -90,14 +90,14 @@ if (isset($_POST['action'])){
 	}
 
 	//move a schedule entry
-	if ($_POST['action'] == "move"){
+	/*if ($_POST['action'] == "move"){
 		
 		$scheduleid = $_POST['scheduleid'];
-		$userid = $_POST['userid'];
+		$jobid = $_POST['jobid'];
 		$scheduledate = (!empty($_POST['scheduledate'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $_POST['scheduledate']))) : NULL;
 
-		$update_stmt = $mysqli->prepare("UPDATE tblSchedule SET UserID = ?, ScheduleDate = ? WHERE ScheduleID = ?"); 
-		$update_stmt->bind_param('ssi', $userid, $scheduledate, $scheduleid); 
+		$update_stmt = $mysqli->prepare("UPDATE tblDelivery SET JobID = ?, DeliveryDate = ? WHERE DeliveryID = ?"); 
+		$update_stmt->bind_param('isi', $jobid, $scheduledate, $scheduleid); 
 		$update_stmt->execute();
 		
 		if ($update_stmt->affected_rows != -1){
@@ -111,37 +111,37 @@ if (isset($_POST['action'])){
 		
 		$data['action'] = "edit";
 		echo json_encode($data);
-	}
+	}*/
 
 	//sort schedule entries
-	if ($_POST['action'] == "sort"){
+	/*if ($_POST['action'] == "sort"){
 		if (isset($_POST['sortorder'])){
 			$sortorder = $_POST['sortorder'];
 
 			$sort = 1;
 			foreach ($sortorder as $scheduleid){
-				$update_stmt = $mysqli->prepare("UPDATE tblSchedule SET SortOrder = ? WHERE ScheduleID = ?"); 
+				$update_stmt = $mysqli->prepare("UPDATE tblDelivery SET SortOrder = ? WHERE DeliveryID = ?"); 
 				$update_stmt->bind_param('ii', $sort, $scheduleid); 
 				$update_stmt->execute();
 
 				$sort++;
 			}
 		}
-	}
+	}*/
 
 	//delete a schedule entry
 	if ($_POST['action'] == "delete"){
 		if (isset($_POST['deleteid'])){
 			$deleteid = $_POST['deleteid'];
 
-			$stmt = $mysqli->prepare("DELETE FROM tblSchedule WHERE ScheduleID = ? LIMIT 1");
+			$stmt = $mysqli->prepare("DELETE FROM tblDelivery WHERE DeliveryID = ? LIMIT 1");
 			$stmt->bind_param("s", $deleteid);     
 			$stmt->execute();
 			
 			if ($stmt->affected_rows != -1)
-				echo "<div class='alert alert-success' role='alert'>The selected schedule staff entry was deleted successfully</div>";
+				echo "<div class='alert alert-success' role='alert'>The selected delivery staff entry was deleted successfully</div>";
 			else
-				echo "<div class='alert alert-danger' role='alert'>The selected schedule staff entry could not be deleted</div>";
+				echo "<div class='alert alert-danger' role='alert'>The selected delivery staff entry could not be deleted</div>";
 				
 			$stmt->close();
 		}

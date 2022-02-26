@@ -143,13 +143,27 @@ include("header.php");
 				});
 
 				$('.add-entry-btn').click(function(){
-					
 					var scheduledate = $(this).attr("data-schedule-date");
 					var userid = $(this).val();
-
 					addEditSchedule("add", 0, scheduledate, userid);
-
 				});
+
+
+				$('.delete-drawer-staff-btn').click(function(){
+					deleteDrawerStaff($(this).val());
+				});
+
+				$('.drawers-week-btn').click(function(){
+					event.preventDefault();
+					currentWeekStart = $(this).val();
+					showWeek($(this).val());
+				});
+
+				$('.staff-drawers-calendar-edit').dblclick(function () {
+					var drawerid = $(this).attr('data-drawer-id');
+					DrawerStaffAddEdit("edit", drawerid);
+				});
+
 
 			});
 		}
@@ -285,39 +299,86 @@ include("header.php");
 		};
 
     
+		function DrawerStaffAddEdit(action, drawerid)
+		{
+			$('#drawer-staff-modal-content').load('drawer-staff-add-edit.php', { action: action, drawerid: drawerid }, function()
+			{ 
+				if (action == "add")
+					$("#drawer-staff-modal").find('.modal-title').text('Add Staff Entry')
+				else if (action == "edit")
+					$("#drawer-staff-modal").find('.modal-title').text('Edit Staff Entry')
+
+				$('#drawer-staff-modal-loader-image').hide(); 
+				$('#drawer-staff-modal-content').fadeIn('slow');
+				
+				$("#drawer-form").validate({
+					rules: {
+						inputJobID: {
+							required: "#inputDescription:blank"
+						},
+						inputDescription: {
+							required: "#inputJobID:blank"
+						}
+					}
+				});
+				
+
+				$('#drawer-delete-btn').click(function(){
+					deleteDrawerStaff($(this).val());
+				});
+
+				$('input[name="inputDrawerDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+
+				if (action == "edit")
+				{
+					$.post("drawer-staff-crud.php", { action: 'edit', 'drawerid': drawerid }) 
+						.done(function(data){
+						var response = JSON.parse(data);
+						$("#inputUserID").val(response.UserId);
+						$("#inputDrawerDate").val(response.DrawerDate);
+						$("#drawerid").val(response.DrawerId);
+						$("#inputDescription").val(response.Description);
+						$("#inputNotes").val(response.Notes);
+						$("#action").val('update');
+					});
+				}
+				$('#drawer-staff-modal').modal('show');
+			});
+		}
+
+		$(document).on('submit', '#drawer-staff-form', function() {
+			$('#modal-content').hide();
+			$('#modal-loader-image').show();
+			 
+			$.post("drawer-staff-crud.php", $(this).serialize())
+				.done(function(data) {
+					$('#drawer-staff-modal').modal('hide');
+					showWeek(currentWeekStart);
+					
+				});
+					 
+			return false;
+		});
+
+		function deleteDrawerStaff(deleteid)
+		{
+			$.confirm({
+				text: "Are you sure you want to delete this draftsman staff entry?",
+				confirm: function() {			
+					$.post("drawer-staff-crud.php", { action: 'delete', deleteid: deleteid }) 
+						.done(function(data){
+							$('#drawer-staff-modal').modal('hide');
+							showWeek(currentWeekStart);
+					});
+				},
+				cancel: function() {
+					// nothing to do
+				}
+			});
+		}
 	});
 
 
-	function DrawerStaffAddEdit(action, scheduleid)
-	{
-		$('#drawer-staff-modal-content').load('drawer-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
-		{ 
-			if (action == "add")
-				$("#drawer-staff-modal").find('.modal-title').text('Add Staff Entry')
-			else if (action == "edit")
-				$("#drawer-staff-modal").find('.modal-title').text('Edit Staff Entry')
-
-			$('#drawer-staff-modal-loader-image').hide(); 
-			$('#drawer-staff-modal-content').fadeIn('slow');
-			
-			$("#drawer-form").validate({
-				rules: {
-					inputJobID: {
-						required: "#inputDescription:blank"
-					},
-					inputDescription: {
-						required: "#inputJobID:blank"
-					}
-				}
-			});
-			
-			$('input[name="inputDrawerDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
-
-
-			$('#drawer-staff-modal').modal('show');
-
-		});
-	}
 	
 </script>
 

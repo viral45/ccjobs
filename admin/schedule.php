@@ -167,17 +167,10 @@ include("header.php");
 					showWeek($(this).val());
 				});
 
-				$('.staff-edit').dblclick(function () {
+				$('.staff-schedule-edit').dblclick(function () {
 					var scheduleid = $(this).attr('data-schedule-id');
 					ScheduleStaffAddEdit("edit", scheduleid);
 				});
-
-				$('.staff-add-entry-btn').click(function(){
-					var scheduledate = $(this).attr("data-schedule-date");
-					var userid = $(this).val();
-					ScheduleStaffAddEdit("add", 0, scheduledate, userid);
-				});
-
 
 			});
 		}
@@ -313,87 +306,84 @@ include("header.php");
 			return this.optional(element) || moment(value, 'DD/MM/YYYY').isValid();
 		};
 
-    
-	});
+		function ScheduleStaffAddEdit(action, scheduleid, scheduledate, userid)
+		{
+			$('#staff-modal-content').load('schedule-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function(){ 
+				if (action == "add")
+					$("#staff-modal").find('.modal-title').text('Add Staff Entry')
+				else if (action == "edit")
+					$("#staff-modal").find('.modal-title').text('Edit Staff Entry')
 
-
-
-	function ScheduleStaffAddEdit(action, scheduleid, scheduledate, userid)
-	{
-		$('#staff-modal-content').load('schedule-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function(){ 
-			if (action == "add")
-				$("#staff-modal").find('.modal-title').text('Add Staff Entry')
-			else if (action == "edit")
-				$("#staff-modal").find('.modal-title').text('Edit Staff Entry')
-
-			$('#staff-modal-loader-image').hide(); 
-			$('#staff-modal-content').fadeIn('slow');
-			
-			$("#staff-form").validate({
-				rules: {
-					inputJobID: {
-						required: "#inputDescription:blank"
-					},
-					inputDescription: {
-						required: "#inputJobID:blank"
+				$('#staff-modal-loader-image').hide(); 
+				$('#staff-modal-content').fadeIn('slow');
+				
+				$("#staff-form").validate({
+					rules: {
+						inputJobID: {
+							required: "#inputDescription:blank"
+						},
+						inputDescription: {
+							required: "#inputJobID:blank"
+						}
 					}
+				});
+				
+				$('input[name="inputScheduleDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+
+
+				$('#staff-modal').modal('show');
+
+				$('#staff-delete-btn').click(function(){
+					deleteStaffSchedule($(this).val());
+				});
+
+
+				if (action == "edit")
+				{
+					$.post("staff-schedule-crud.php", { action: 'edit', 'scheduleid': scheduleid }) 
+						.done(function(data){
+						var response = JSON.parse(data);
+						$("#inputUserID").val(response.UserID);
+						$("#inputScheduleDate").val(response.ScheduleDate);
+						$("#inputDescription").val(response.Description);
+						$("#inputNotes").val(response.Notes);
+						$("#action").val('update');
+					});
+				}
+
+			});
+		}
+
+		$(document).on('submit', '#staff-form', function() {
+			$('#staff-modal-content').hide();
+			$('#staff-modal-loader-image').show();
+			 
+			$.post("staff-schedule-crud.php", $(this).serialize())
+				.done(function(data) {
+				$('#staff-modal').modal('hide');
+				showWeek(currentWeekStart);
+			});
+			return false;
+		});
+
+		function deleteStaffSchedule(deleteid){
+			$.confirm({
+				text: "Are you sure you want to delete this schedule staff entry?",
+				confirm: function() {			
+					
+					$.post("staff-schedule-crud.php", { action: 'delete', deleteid: deleteid }) 
+						.done(function(data){
+							$('#staff-modal').modal('hide');
+							showWeek(currentWeekStart);
+					});
+				},
+				cancel: function() {
+					// nothing to do
 				}
 			});
-			
-			$('input[name="inputScheduleDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
-
-
-			$('#staff-modal').modal('show');
-
-			$('#staff-delete-btn').click(function(){
-				deleteStaffSchedule($(this).val());
-			});
-
-
-			if (action == "edit")
-			{
-				$.post("staff-schedule-crud.php", { action: 'edit', 'scheduleid': scheduleid }) 
-					.done(function(data){
-					var response = JSON.parse(data);
-					$("#inputUserID").val(response.UserID);
-					$("#inputScheduleDate").val(response.ScheduleDate);
-					$("#inputDescription").val(response.Description);
-					$("#inputNotes").val(response.Notes);
-					$("#action").val('update');
-				});
-			}
-
-		});
-	}
-
-	$(document).on('submit', '#staff-form', function() {
-		$('#staff-modal-content').hide();
-		$('#staff-modal-loader-image').show();
-		 
-		$.post("staff-schedule-crud.php", $(this).serialize())
-			.done(function(data) {
-			$('#staff-modal').modal('hide');
-			showWeek(currentWeekStart);
-		});
-		return false;
+		}
 	});
-
-	function deleteStaffSchedule(deleteid){
-		$.confirm({
-			text: "Are you sure you want to delete this schedule staff entry?",
-			confirm: function() {			
-				
-				$.post("staff-schedule-crud.php", { action: 'delete', deleteid: deleteid }) 
-					.done(function(data){
-						$('#staff-modal').modal('hide');
-						showWeek(currentWeekStart);
-				});
-			},
-			cancel: function() {
-				// nothing to do
-			}
-		});
-	}
+		
 	
 </script>
 

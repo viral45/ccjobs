@@ -51,12 +51,12 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                         foreach ($datearray as $day){ 
                             echo "<td class='entry' data-user-id='" . $row['UserID'] . "' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
                             echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' value='" . $row['UserID'] . "' data-schedule-date='$day'>+</button>";
-                            $schedulequery = "SELECT tblDrawerSchedule.DrawerScheduleID, tblJob.JobAddress, tblJob.JobID, tblDrawerSchedule.Description FROM tblJob RIGHT JOIN tblDrawerSchedule ON tblJob.JobID = tblDrawerSchedule.JobID WHERE ScheduleDate = '" . date('Y-m-d',strtotime($day)) . "' AND UserID = '" . $row['UserID'] ."' ORDER BY SortOrder";
+                            $schedulequery = "SELECT tblDrawerSchedule.DrawerScheduleID, tblJob.JobAddress, tblJob.JobID, tblDrawerSchedule.Description, tblDrawerSchedule.DrawerType FROM tblJob RIGHT JOIN tblDrawerSchedule ON tblJob.JobID = tblDrawerSchedule.JobID WHERE ScheduleDate = '" . date('Y-m-d',strtotime($day)) . "' AND UserID = '" . $row['UserID'] ."' ORDER BY SortOrder";
                             $scheduleresult = $mysqli->query($schedulequery);
                             
                             while($schedulerow = $scheduleresult->fetch_array())
                             {
-                                if($schedulerow['ScheduleType'] == 1)
+                                if($schedulerow['DrawerType'] == 1)
                                 {
                                     if (!empty($schedulerow['JobID']))
                                     {
@@ -69,7 +69,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                                 }
                                 else
                                 {
-                                    echo "<div class='alert alert-warning staff-edit' data-action='delete' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-delivery-staff-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>"; 
+                                    echo "<div class='alert alert-warning staff-drawers-calendar-edit' data-action='delete' data-drawer-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-drawer-staff-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>"; 
                                 }
                                 
                                 

@@ -72,7 +72,8 @@ include("header.php");
 		e.preventDefault();
 	});
 	
-	$(document).ready(function(){
+	$(document).ready(function()
+	{
 
 		showWeek();
 		
@@ -140,12 +141,26 @@ include("header.php");
 				});
 
 				$('.add-entry-btn').click(function(){
-					
 					var scheduledate = $(this).attr("data-schedule-date");
 					var userid = $(this).val();
-
 					addEditSchedule("add", 0, scheduledate, userid);
 
+				});
+
+
+				$('.assembler-staff-delete-btn').click(function(){
+					deleteAssemblerStaff($(this).val());
+				});
+
+				$('.assembler-staff-week-btn').click(function(){
+					event.preventDefault();
+					currentWeekStart = $(this).val();
+					showWeek($(this).val());
+				});
+
+				$('.assembler-staff-calendar-entry').dblclick(function () {
+					var assemblerid = $(this).attr('data-assembler-id');
+					AssemblerStaffAddEdit("edit", assemblerid);
 				});
 
 			});
@@ -281,11 +296,10 @@ include("header.php");
 			return this.optional(element) || moment(value, 'DD/MM/YYYY').isValid();
 		};
 
-    });
 
-	function AssemblerStaffAddEdit(action, scheduleid)
+	function AssemblerStaffAddEdit(action, assemblerid)
 	{
-		$('#assembler-staff-modal-content').load('assembler-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
+		$('#assembler-staff-modal-content').load('assembler-staff-add-edit.php', { action: action, assemblerid: assemblerid }, function()
 		{ 
 			if (action == "add")
 				$("#assembler-staff-modal").find('.modal-title').text('Add Staff Entry')
@@ -295,12 +309,12 @@ include("header.php");
 			$('#assembler-staff-modal-loader-image').hide(); 
 			$('#assembler-staff-modal-content').fadeIn('slow');
 			
-			$("#assembler-form").validate({
+			$("#assembler-staff-form").validate({
 				rules: {
-					inputJobID: {
+					inputDescription: {
 						required: "#inputDescription:blank"
 					},
-					inputDescription: {
+					inputJobID: {
 						required: "#inputJobID:blank"
 					}
 				}
@@ -309,12 +323,60 @@ include("header.php");
 			$('.selectpicker').selectpicker({liveSearch: true});
 			$('input[name="inputAssemblerDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
 
+			if (action == "edit")
+			{
+				$.post("assembler-staff-crud.php", { action: 'edit', 'assemblerid': assemblerid }) 
+					.done(function(data){
+					var response = JSON.parse(data);
+					$("#inputUserID").val(response.UserId);
+					$("#inputAssemblerDate").val(response.AssemblerDate);
+					$("#assemblerid").val(response.AssemblerId);
+					$("#inputDescription").val(response.Description);
+					$("#inputNotes").val(response.Notes);
+					$("#action").val('update');
+				});
+			}
+
+			$('#assembler-delete-btn').click(function(){
+				deleteAssemblerStaff($(this).val());
+			});
 
 			$('#assembler-staff-modal').modal('show');
 
 		});
 	}
 	
+	$(document).on('submit', '#assembler-staff-form', function() {
+		$('#modal-content').hide();
+		$('#modal-loader-image').show();
+		 
+		$.post("assembler-staff-crud.php", $(this).serialize())
+			.done(function(data) {
+				$('#assembler-staff-modal').modal('hide');
+				showWeek(currentWeekStart);
+			});
+		return false;
+	});
+
+	function deleteAssemblerStaff(deleteid){
+		$.confirm({
+			text: "Are you sure you want to delete this assembler staff entry?",
+			confirm: function() {			
+				
+				$.post("assembler-staff-crud.php", { action: 'delete', deleteid: deleteid }) 
+					.done(function(data){
+						$('#assembler-staff-modal').modal('hide');
+						showWeek(currentWeekStart);
+				});
+			},
+			cancel: function() {
+				// nothing to do
+			}
+		});
+	}
+});
+		
+
 </script>
 
 <?php include("footer.php"); ?>

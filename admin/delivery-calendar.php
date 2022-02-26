@@ -43,14 +43,14 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                 <?php 
                     foreach ($datearray as $day){ 
                         echo "<td class='entry' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
-                        $deliveryquery = "SELECT tblDelivery.DeliveryID, tblJob.JobAddress, tblJob.JobID, tblDelivery.Description, tblDelivery.ScheduleType FROM tblJob RIGHT JOIN tblDelivery ON tblJob.JobID = tblDelivery.JobID WHERE DeliveryDate = '" . date('Y-m-d',strtotime($day)) . "' ORDER BY SortOrder";
+                        echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' data-delivery-date='$day'>+</button>";
+                        $deliveryquery = "SELECT tblDelivery.DeliveryID, tblJob.JobAddress, tblJob.JobID, tblDelivery.Description, tblDelivery.DeliveryType FROM tblJob RIGHT JOIN tblDelivery ON tblJob.JobID = tblDelivery.JobID WHERE DeliveryDate = '" . date('Y-m-d',strtotime($day)) . "' ORDER BY SortOrder";
                         $deliveryresult = $mysqli->query($deliveryquery);
                         
                         while($deliveryrow = $deliveryresult->fetch_array())
                         {
-                            if($deliveryrow['ScheduleType']==1)
+                            if($deliveryrow['DeliveryType']==1)
                             {
-                                echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' data-delivery-date='$day'>+</button>";
                                 if (!empty($deliveryrow['JobID']))
                                 {
                                     //check assembly completed
@@ -68,7 +68,6 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                                         $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
 
                                     echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$deliveryrow['JobID']."#installer' target='_blank>" . $alertstring . " " . $deliveryrow['JobAddress'] . "</a></div>";
-                                        
                                 }
                                 else
                                 {
@@ -77,9 +76,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                             }
                             else
                             {
-                                echo "<button class='btn btn-xs btn-primary pull-right delivery-staff-calendar-entry' data-delivery-id='" . $deliveryrow['DeliveryID'] . "' data-delivery-date='$day'>+</button>";
-
-                                echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-btn delete-delivery-staff-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $deliveryrow['Description'] . "</div>";      
+                                echo "<div class='alert alert-warning staff-delivery-calendar-edit' data-action='edit' data-delivery-id='" . $deliveryrow['DeliveryID'] . "'><button type='button' class='close delete-delivery-staff-btn' aria-label='Close' value='" . $deliveryrow['DeliveryID'] . "'><span aria-hidden='true'>&times;</span></button>" . $deliveryrow['Description'] . "</div>";      
                             }                         
                         }
                         

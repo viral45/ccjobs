@@ -140,12 +140,26 @@ include("header.php");
 				});
 
 				$('.add-entry-btn').click(function(){
-					
 					var scheduledate = $(this).attr("data-schedule-date");
 					var userid = $(this).val();
-
 					addEditSchedule("add", 0, scheduledate, userid);
 
+				});
+
+
+				$('.stone-staff-delete-btn').click(function(){
+					deleteStoneStaff($(this).val());
+				});
+
+				$('.stone-week-btn').click(function(){
+					event.preventDefault();
+					currentWeekStart = $(this).val();
+					showWeek($(this).val());
+				});
+
+				$('.stone-staff-calendar-edit').dblclick(function () {
+					var stoneid = $(this).attr('data-stone-id');
+					StoneStaffAddEdit("edit", stoneid);
 				});
 
 			});
@@ -281,40 +295,83 @@ include("header.php");
 			return this.optional(element) || moment(value, 'DD/MM/YYYY').isValid();
 		};
 
-    
-	});
+		function StoneStaffAddEdit(action, stoneid)
+		{
+			$('#stone-staff-modal-content').load('stone-staff-add-edit.php', { action: action, stoneid: stoneid }, function()
+			{ 
+				if (action == "add")
+					$("#stone-staff-modal").find('.modal-title').text('Add Staff Entry')
+				else if (action == "edit")
+					$("#stone-staff-modal").find('.modal-title').text('Edit Staff Entry')
 
-
-	function StoneStaffAddEdit(action, scheduleid)
-	{
-		$('#stone-staff-modal-content').load('stone-staff-add-edit.php', { action: action, scheduleid: scheduleid }, function()
-		{ 
-			if (action == "add")
-				$("#stone-staff-modal").find('.modal-title').text('Add Staff Entry')
-			else if (action == "edit")
-				$("#stone-staff-modal").find('.modal-title').text('Edit Staff Entry')
-
-			$('#stone-staff-modal-loader-image').hide(); 
-			$('#stone-staff-modal-content').fadeIn('slow');
-			
-			$("#stone-form").validate({
-				rules: {
-					inputJobID: {
-						required: "#inputDescription:blank"
-					},
-					inputDescription: {
-						required: "#inputJobID:blank"
+				$('#stone-staff-modal-loader-image').hide(); 
+				$('#stone-staff-modal-content').fadeIn('slow');
+				
+				$("#stone-form").validate({
+					rules: {
+						inputJobID: {
+							required: "#inputDescription:blank"
+						},
+						inputDescription: {
+							required: "#inputJobID:blank"
+						}
 					}
+				});
+				$('.selectpicker').selectpicker({liveSearch: true});
+				$('input[name="inputStoneDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
+
+				$('#stone-staff-modal').modal('show');
+
+				if (action == "edit")
+				{
+					$.post("stone-staff-crud.php", { action: 'edit', 'stoneid': stoneid }) 
+						.done(function(data){
+						var response = JSON.parse(data);
+						$("#inputUserID").val(response.UserId);
+						$("#inputStoneDate").val(response.StoneDate);
+						$("#stoneid").val(response.StoneId);
+						$("#inputDescription").val(response.Description);
+						$("#inputNotes").val(response.Notes);
+						$("#action").val('update');
+					});
+				}
+
+
+				$('#stone-delete-btn').click(function(){
+					deleteStoneStaff($(this).val());
+				});
+
+			});
+		}
+			
+		$(document).on('submit', '#stone-staff-form', function() {
+			$('#modal-content').hide();
+			$('#modal-loader-image').show();
+			$.post("stone-staff-crud.php", $(this).serialize())
+				.done(function(data) {
+					$('#stone-staff-modal').modal('hide');
+					showWeek(currentWeekStart);
+				});
+			return false;
+		});
+
+		function deleteStoneStaff(deleteid)
+		{
+			$.confirm({
+				text: "Are you sure you want to delete this stone staff entry?",
+				confirm: function() {			
+					$.post("stone-staff-crud.php", { action: 'delete', deleteid: deleteid }) 
+						.done(function(data){
+							$('#stone-staff-modal').modal('hide');
+							showWeek(currentWeekStart);
+					});
+				},
+				cancel: function() {
+					// nothing to do
 				}
 			});
-			$('.selectpicker').selectpicker({liveSearch: true});
-			$('input[name="inputStoneDate"]').daterangepicker({format: 'DD-MM-YYYY' , singleDatePicker: true,showDropdowns: true});
-
-			$('#stone-staff-modal').modal('show');
-
-		});
-	}
-	
+		}
+	});
 </script>
 
 <?php include("footer.php"); ?>

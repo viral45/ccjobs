@@ -9,9 +9,9 @@ if(!isset($_SESSION['logged_in'])){
 include("config.php"); 
 
 ?>
-<form id='stone-form' action='#' method='post'>
+<form id='stone-staff-form' action='#' method='post'>
     <input type="hidden" id="action" name="action" value="<?php if (isset($_POST['action'])) { echo $_POST['action']; } ?>">
-    <input type="hidden" id="scheduleid" name="scheduleid" value="<?php if (isset($_POST['scheduleid'])) { echo $_POST['scheduleid']; } ?>">
+    <input type="hidden" id="stoneid" name="stoneid" value="<?php if (isset($_POST['stoneid'])) { echo $_POST['stoneid']; } ?>">
     
 	<div class="form-group">
 		<label for="inputUserID">Employee</label>
@@ -54,6 +54,6 @@ include("config.php");
 	<button type="button" id="return-btn" class="btn btn-warning"  data-dismiss="modal">Return</button>
 	
 	<?php if ($_POST['action'] == "edit"){ ?>
-	<button type="button" id="delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($formscheduleid)) { echo $formscheduleid; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
+	<button type="button" id="stone-delete-btn" class="btn btn-danger pull-right" value="<?php if (isset($_POST['stoneid'])) { echo $_POST['stoneid']; } ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button> 
 	<?php } ?>
 </form>
