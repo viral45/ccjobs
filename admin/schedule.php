@@ -167,7 +167,7 @@ include("header.php");
 					showWeek($(this).val());
 				});
 
-				$('.staff-calendar-entry').click(function () {
+				$('.staff-edit').dblclick(function () {
 					var scheduleid = $(this).attr('data-schedule-id');
 					ScheduleStaffAddEdit("edit", scheduleid);
 				});

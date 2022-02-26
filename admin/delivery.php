@@ -158,7 +158,7 @@ include("header.php");
 					showWeek($(this).val());
 				});
 
-				$('.delivery-staff-calendar-entry').click(function () {
+				$('.staff-edit').dblclick(function () {
 					var deliveryid = $(this).attr('data-delivery-id');
 					DeliveryStaffAddEdit("edit", deliveryid);
 				});

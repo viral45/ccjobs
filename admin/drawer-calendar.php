@@ -56,15 +56,22 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                             
                             while($schedulerow = $scheduleresult->fetch_array())
                             {
-                                
-                                if (!empty($schedulerow['JobID']))
+                                if($schedulerow['ScheduleType'] == 1)
                                 {
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#draftsman' target='_blank'>".$schedulerow['JobAddress'] . "</a></div>";                                    
+                                    if (!empty($schedulerow['JobID']))
+                                    {
+                                        echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#draftsman' target='_blank'>".$schedulerow['JobAddress'] . "</a></div>";                                    
+                                    }
+                                    else
+                                    {
+                                        echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>";                                    
+                                    }
                                 }
                                 else
                                 {
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>";                                    
+                                    echo "<div class='alert alert-warning staff-edit' data-action='delete' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-delivery-staff-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>"; 
                                 }
+                                
                                 
                           
                             }
