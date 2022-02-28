@@ -19,7 +19,7 @@ $where = " WHERE ProjectID IS NOT NULL AND Deleted = 0";
 <div class="table-responsive">
 
 	<?php
-		$query = "SELECT COUNT(ProjectID) FROM tblProject $where";
+		$query = "SELECT COUNT(ProjectID) FROM tblproject $where";
 
 		$result = $mysqli->query($query);
 		$row = $result->fetch_array(); 
@@ -46,7 +46,7 @@ $where = " WHERE ProjectID IS NOT NULL AND Deleted = 0";
             <tbody>
                 
                 <?php 
-                $query = "SELECT ProjectID, ProjectName, Discription, DateEntered FROM tblProject $where ORDER BY ProjectID LIMIT $start_from, $recordsperpage";
+                $query = "SELECT ProjectID, ProjectName, Discription, DateEntered FROM tblproject $where ORDER BY ProjectID LIMIT $start_from, $recordsperpage";
 
 			    $result = $mysqli->query($query);
                 

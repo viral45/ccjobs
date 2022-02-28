@@ -27,7 +27,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
 
 <div class="table-responsive">
 
-    <table id="caltable" class="table table-bordered table-striped">
+    <table id="caltable" class="table table-bordered table-striped bg-info shaded-icon">
         <thead>
             <tr>
                 <th style="width: 16%">Installer</th>
@@ -72,7 +72,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
                                     else   
                                         $alertstring = "<span class='fa fa-1x fa-check text-success'></span>";
 
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $alertstring . " " . $schedulerow['JobAddress'] . "</div>";
+                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['ScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['ScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#installer' target='_blank>" . $alertstring . " " . $schedulerow['JobAddress'] . "</a></div>";
                                         
                                 }
                                 else{

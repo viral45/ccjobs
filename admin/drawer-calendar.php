@@ -26,7 +26,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
 
 <div class="table-responsive">
 
-    <table id="caltable" class="table table-bordered table-striped">
+    <table id="caltable" class="table table-bordered table-striped bg-info shaded-icon">
         <thead>
             <tr>
                 <th style="width: 15%">Draftsman</th>
@@ -57,7 +57,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $fridaydate . "</h3>";
                             while($schedulerow = $scheduleresult->fetch_array()){
                                 if (!empty($schedulerow['JobID'])){
    
-                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['JobAddress'] . "</div>";                                    
+                                    echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button><a href='../job.php?jobid=".$schedulerow['JobID']."#draftsman' target='_blank'>".$schedulerow['JobAddress'] . "</a></div>";                                    
                                 }
                                 else{
                                     echo "<div class='alert alert-warning calendar-entry' data-action='edit' data-schedule-id='" . $schedulerow['DrawerScheduleID'] . "'><button type='button' class='close delete-btn' aria-label='Close' value='" . $schedulerow['DrawerScheduleID'] . "'><span aria-hidden='true'>&times;</span></button>" . $schedulerow['Description'] . "</div>";                                    

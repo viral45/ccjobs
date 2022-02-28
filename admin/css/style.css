@@ -1,7 +1,7 @@
-﻿body {
+﻿/*body {
   padding-top: 30px;
 }
-
+*/
 .navbar-brand{
 	padding:0;
 }
@@ -34,7 +34,11 @@ input[readonly] {
 	background-color: #fff;
 }
 
-.navbar .active > a { background:#CE1500!important } 
+.navbar .active > a { background:#CE1500!important; color: #fff !important; } 
+
+.widget-menu .active > a { background:#CE1500!important; color: #fff;} 
+
+.widget-menu .active > a i { color: #fff !important} 
 
 .navbar-inverse{
 	background-color:#000;
@@ -131,3 +135,28 @@ h1 .pageTitle{
 	display: flex;
   justify-content: center;
 }
+
+.fa-sort-desc{
+	font-size: 20px !important;
+	cursor: pointer;
+	height: 0;
+}
+
+.fa-sort-asc{
+	font-size: 20px !important;
+	cursor: pointer;
+	height: 5px;
+}
+
+.sort-icon{
+	display: inline-grid;
+	margin-left: 5px;
+}
+
+.nav-collapse.navbar-inverse-collapse {
+    display: block;
+    padding: 10px 20px 10px;;
+}
+
+
+
