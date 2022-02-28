@@ -39,11 +39,18 @@ if(!empty($_REQUEST['projectId']))
 }
 
  
- $orderBy = "ORDER BY ProjectID ASC, JobID ASC";
+ /*$orderBy = "ORDER BY ProjectID ASC, JobID ASC";
 
  if($_REQUEST["type"] != null && $_REQUEST["sort"] != null)
  {
     $orderBy = "ORDER BY ProjectID ASC, ". $_REQUEST['type']." ".$_REQUEST['sort'] ;
+ }   */
+
+ $orderBy = "ORDER BY JobID DESC";
+
+ if($_REQUEST["type"] != null && $_REQUEST["sort"] != null)
+ {
+    $orderBy = "ORDER BY ". $_REQUEST['type']." ".$_REQUEST['sort'] ;
  }   
 
 ?>

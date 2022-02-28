@@ -67,7 +67,7 @@ include("header.php");
 					  <label for="projectId">Status:</label>
 					  <select class="form-control"  name="status">
 					    <option value="">None</option>
-					    <option value="1">Open</option>
+					    <option value="1" selected="selected">Open</option>
 					    <option value="2">Close</option>
 					    <option value="99">All</option>
 					  </select>
@@ -103,7 +103,8 @@ include("header.php");
 		var currentPage = 1;
 		var currentJobID = 0;
 		var type = 'JobID';
-		var sort = 'ASC';
+		var sort = 'DESC';
+		//var sort = 'ASC';
 		var ID = 'JobIDASC';
 		showJobs(1,type,sort,ID);
 		
