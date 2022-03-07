@@ -13,6 +13,9 @@ $page = "jobs";
 
 include("header.php"); 
 
+if(isset($_REQUEST['project'])){
+    $projectId = $_REQUEST['project'];
+}
 ?>
 
 <div class="page-header" style="padding-bottom:30px;">
@@ -100,6 +103,23 @@ include("header.php");
 	
 	$(document).ready(function(){
 
+		var getUrlParameter = function getUrlParameter(sParam) {
+			var sPageURL = window.location.search.substring(1),
+				sURLVariables = sPageURL.split('&'),
+				sParameterName,
+				i;
+
+			for (i = 0; i < sURLVariables.length; i++) {
+				sParameterName = sURLVariables[i].split('=');
+
+				if (sParameterName[0] === sParam) {
+					return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+				}
+			}
+			return false;
+		};
+
+
 		var currentPage = 1;
 		var currentJobID = 0;
 		var type = 'JobID';
@@ -114,6 +134,10 @@ include("header.php");
 		});
 		
 		$('#reset-btn').click(function(){
+			var project_id = getUrlParameter('project');
+	        if(project_id){
+	            window.location.href = window.location.href.split('?')[0];
+	        }
 			$('#alert').hide();
 			$('#searchForm')[0].reset();
 			showJobs(1,type,sort,ID);

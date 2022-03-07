@@ -159,4 +159,12 @@ h1 .pageTitle{
 }
 
 
+.name-bg-custom
+{
+	background: #d5b591 !important;
+}
 
+.table-responsive td a {
+color: #333 !important;
+text-decoration: none !important;
+}

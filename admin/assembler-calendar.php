@@ -58,7 +58,7 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
     <table id="caltable" class="table table-bordered table-striped bg-info shaded-icon">
         <thead>
             <tr>
-                <th style="width: 16%">Installer</th>
+                <!-- <th style="width: 16%">Installer</th> -->
                 <th style="width: 14%">MON <?php echo $mondaydate; ?></th>
                 <th style="width: 14%">TUE <?php echo $tuesdaydate; ?></th>
                 <th style="width: 14%">WED <?php echo $wednesdaydate; ?></th>
@@ -74,12 +74,24 @@ echo "<h3>WEEK " . $mondaydate . " to " . $saturdaydate . "</h3>";
             $result = $mysqli->query($query);
             
             while($row = $result->fetch_array()){
+            $name_set=1;
             ?>
                 <tr>
-                    <td><strong><?php echo $row['FullName'] ?></strong></td>
+                    <!-- <td><strong><?php echo $row['FullName'] ?></strong></td> -->
                     <?php 
                         foreach ($datearray as $day){ 
-                            echo "<td class='entry' data-user-id='" . $row['UserID'] . "' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
+                            //echo "<td class='entry' data-user-id='" . $row['UserID'] . "' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
+
+                            if($name_set==1)
+                            {
+                                echo "<td class='entry' data-user-id='" . $row['UserID'] . "' data-date='" . date('Y-m-d',strtotime($day)) . "'><div class='alert alert-warning name-bg-custom calendar-entry'><strong>".$row['FullName']."</strong></div>";
+                                $name_set++;
+                            }
+                            else
+                            {
+                                echo "<td class='entry' data-user-id='" . $row['UserID'] . "' data-date='" . date('Y-m-d',strtotime($day)) . "'>";
+                            }    
+
                             echo "<button class='btn btn-xs btn-primary pull-right add-entry-btn' value='" . $row['UserID'] . "' data-schedule-date='$day'>+</button>";
                             $schedulequery = "SELECT tblAssemblerSchedule.AssemblerScheduleID, tblJob.JobAddress, tblJob.JobID, tblAssemblerSchedule.Description, tblAssemblerSchedule.AssemblerType FROM tblJob RIGHT JOIN tblAssemblerSchedule ON tblJob.JobID = tblAssemblerSchedule.JobID WHERE ScheduleDate = '" . date('Y-m-d',strtotime($day)) . "' AND UserID = '" . $row['UserID'] ."' ORDER BY SortOrder";
                             $scheduleresult = $mysqli->query($schedulequery);

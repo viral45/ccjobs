@@ -20,8 +20,8 @@ if (isset($_POST['action'])){
 		$notes = $_POST['inputNotes'];
 		$DrawerType = 1;
 
-		$insert_stmt = $mysqli->prepare("INSERT INTO tblDrawerSchedule (UserID, JobID, Description, ScheduleDate, Notes, DrawerType) VALUES (?, ?, ?, ?, ?)");
-		$insert_stmt->bind_param('sisss', $userid, $jobid, $description, $scheduledate, $notes, $DrawerType); 
+		$insert_stmt = $mysqli->prepare("INSERT INTO tblDrawerSchedule (UserID, JobID, Description, ScheduleDate, Notes, DrawerType) VALUES (?, ?, ?, ?, ?, ?)");
+		$insert_stmt->bind_param('sisssi', $userid, $jobid, $description, $scheduledate, $notes, $DrawerType); 
 		$insert_stmt->execute();
 				
 		if ($insert_stmt->affected_rows != -1){
