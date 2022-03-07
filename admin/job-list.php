@@ -59,7 +59,7 @@ if(!empty($_REQUEST['projectId']))
 
 	<?php
 		$query = "SELECT COUNT(JobID) FROM tblJob $where";
-
+        //echo $query;die; 
 		$result = $mysqli->query($query);
 		$row = $result->fetch_array(); 
 		$total_records = $row[0];  
@@ -174,7 +174,8 @@ if(!empty($_REQUEST['projectId']))
 
                         <td nowrap>   
                             <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-primary btn-xs edit-btn" data-toggle="tooltip" data-placement="top" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
-                            <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time" aria-hidden="true"></span></button>                        
+                           <!--  <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time" aria-hidden="true"></span></button>     -->
+                            <a href="../job.php?jobid=<?php echo $row['JobID']; ?>#draftsman" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time job-history-icon-custom" aria-hidden="true"></span></a>                        
                         </td>
                     </tr>
                     
