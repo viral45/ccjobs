@@ -62,7 +62,7 @@
 						<li role="presentation"><a href="index.php">Home</a></li>
 						<li role="presentation"><a href="job-lookup.php">Change Job</a></li>
 						<li role="presentation"><a href="job-search.php">Search</a></li>
-						<li role="presentation"><a href="admin/jobs.php">Job</a></li>
+						<li role="presentation"><a href="my-jobs.php">Job</a></li>
 					</ul>
 					
 				</div>
