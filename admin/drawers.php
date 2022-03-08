@@ -106,6 +106,15 @@ include("header.php");
 					update: function(event, ui){
 
 						var scheduleid = ui.item.attr('data-schedule-id');
+						if(scheduleid==undefined)
+						{
+							scheduleid = ui.item.attr('data-drawer-id');
+							var sortorder = $(this).sortable("toArray", {attribute: "data-drawer-id"});
+						}
+						else
+						{
+							var sortorder = $(this).sortable("toArray", {attribute: "data-schedule-id"});
+						}
 						var userid = $(this).attr('data-user-id');
 						var scheduledate = $(this).attr('data-date');
 						
@@ -116,7 +125,6 @@ include("header.php");
 									//showWeek(currentWeekStart);
 								});
 						}
-						var sortorder = $(this).sortable("toArray", {attribute: "data-schedule-id"});
 						
 						$.post("drawer-crud.php", {action: "sort", sortorder: sortorder})
 							.done(function(data) {
@@ -126,6 +134,8 @@ include("header.php");
 
 					}
 				}).disableSelection();
+
+				
 				
 				$('.delete-btn').click(function(){
 					deleteJob($(this).val());

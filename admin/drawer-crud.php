@@ -92,7 +92,6 @@ if (isset($_POST['action'])){
 	if ($_POST['action'] == "sort"){
 		if (isset($_POST['sortorder'])){
 			$sortorder = $_POST['sortorder'];
-
 			$sort = 1;
 			foreach ($sortorder as $drawerscheduleid){
 				$update_stmt = $mysqli->prepare("UPDATE tblDrawerSchedule SET SortOrder = ? WHERE DrawerScheduleID = ?"); 
@@ -103,6 +102,7 @@ if (isset($_POST['action'])){
 			}
 		}
 	}
+
 
 	//delete a schedule entry
 	if ($_POST['action'] == "delete"){

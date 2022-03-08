@@ -103,7 +103,17 @@ include("header.php");
 					containment: "#caltable",
 					update: function(event, ui){
 
+						/*var scheduleid = ui.item.attr('data-schedule-id');*/
 						var scheduleid = ui.item.attr('data-schedule-id');
+						if(scheduleid==undefined)
+						{
+							scheduleid = ui.item.attr('data-assembler-id');
+							var sortorder = $(this).sortable("toArray", {attribute: "data-assembler-id"});
+						}
+						else
+						{
+							var sortorder = $(this).sortable("toArray", {attribute: "data-schedule-id"});
+						}
 						var userid = $(this).attr('data-user-id');
 						var scheduledate = $(this).attr('data-date');
 						
@@ -114,7 +124,7 @@ include("header.php");
 									//showWeek(currentWeekStart);
 								});
 						}
-						var sortorder = $(this).sortable("toArray", {attribute: "data-schedule-id"});
+						//var sortorder = $(this).sortable("toArray", {attribute: "data-schedule-id"});
 						
 						$.post("assembler-crud.php", {action: "sort", sortorder: sortorder})
 							.done(function(data) {
