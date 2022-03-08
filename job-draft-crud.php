@@ -453,5 +453,62 @@ if (isset($_POST['action'])){
 		}
 	}
 
+	// Code by Kiran on 24th February 2022 for Create Sub Job
+
+	if ($_POST['action'] == "CreateSubJob"){
+
+		$jobid = $_POST['jobid'];
+		
+		$query = "SELECT * FROM tbljob WHERE JobID = $jobid";
+		$result = $mysqli->query($query);
+		$row = $result->fetch_array();
+
+		$subJob_query = "SELECT * FROM tbljob WHERE subJobId = $jobid";
+		$subJob_result = $mysqli->query($subJob_query);
+
+		if($subJob_result != null)
+		{
+			$totalCount = mysqli_num_rows($subJob_result);
+			$subJobId = $jobid.'.'.($totalCount + 1);
+			//$subJob_row = $subJob_result->fetch_array();
+		}
+		else
+		{
+			$subJobId = $jobid.'.1';
+		}
+		
+
+		$data = array();
+		if($row){
+
+			$JobID = $row['JobID'];
+			$ProjectID = $row['ProjectID'];
+			$address = $row['JobAddress'];
+			$builder = $row['Builder'];
+			$dateentered = $row['DateEntered'];
+			$datemeasure = (!empty($row['DateMeasure'])) ? date("Y-m-d", strtotime(str_replace('/', '-', $row['DateMeasure']))) : NULL;
+			$measureby = $row['MeasureBy'];
+			$ParentJobId = $row['ParentJobId'];
+			$status = $row['status'];
+			$Deleted = $row['Deleted'];
+			
+			$insert_stmt = $mysqli->prepare("INSERT INTO tblJob (subJobId,ProjectID, JobAddress, Builder, DateEntered, DateMeasure, MeasureBy, ParentJobId, status, Deleted) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$insert_stmt->bind_param("ssssssssss", $subJobId,$ProjectID, $address, $builder, $dateentered, $datemeasure, $measureby, $JobID, $status, $Deleted); 
+			
+			$insert_stmt->execute();
+
+			if ($insert_stmt->affected_rows != -1){
+				$data['msg'] = "The Sub Job was added successfully";
+			} else{
+				$data['msg'] = "The Sub Job could not be added";
+			}
+			
+		}
+
+		$data['jobid'] = $jobid;
+		echo json_encode($data);
+	}	
+
+	// Code by Kiran on 24th February 2022
 }
 ?>

@@ -54,7 +54,8 @@ $where = " WHERE ProjectID IS NOT NULL AND Deleted = 0";
                 ?>
                     <tr>
                         <td ><?php echo $row['ProjectID'] ?></td>
-                        <td ><?php echo $row['ProjectName'] ?></td>                       
+                        <!-- <td ><?php echo $row['ProjectName'] ?></td>      -->                  
+                        <td><b><a href="jobs.php?project=<?php echo $row['ProjectID'] ?>"><?php echo $row['ProjectName'] ?></a></b></td>
                         <td><?php echo date("d-m-Y", strtotime($row['DateEntered'])) ?></td>
                         <td><?php echo (!empty($row['DateMeasure']) ? date("d-m-Y", strtotime($row['DateMeasure']))  : ""); ?></td>
 

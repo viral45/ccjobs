@@ -13,6 +13,9 @@ $page = "jobs";
 
 include("header.php"); 
 
+if(isset($_REQUEST['project'])){
+    $projectId = $_REQUEST['project'];
+}
 ?>
 
 <div class="page-header" style="padding-bottom:30px;">
@@ -67,7 +70,7 @@ include("header.php");
 					  <label for="projectId">Status:</label>
 					  <select class="form-control"  name="status">
 					    <option value="">None</option>
-					    <option value="1">Open</option>
+					    <option value="1" selected="selected">Open</option>
 					    <option value="2">Close</option>
 					    <option value="99">All</option>
 					  </select>
@@ -100,10 +103,28 @@ include("header.php");
 	
 	$(document).ready(function(){
 
+		var getUrlParameter = function getUrlParameter(sParam) {
+			var sPageURL = window.location.search.substring(1),
+				sURLVariables = sPageURL.split('&'),
+				sParameterName,
+				i;
+
+			for (i = 0; i < sURLVariables.length; i++) {
+				sParameterName = sURLVariables[i].split('=');
+
+				if (sParameterName[0] === sParam) {
+					return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+				}
+			}
+			return false;
+		};
+
+
 		var currentPage = 1;
 		var currentJobID = 0;
 		var type = 'JobID';
-		var sort = 'ASC';
+		var sort = 'DESC';
+		//var sort = 'ASC';
 		var ID = 'JobIDASC';
 		showJobs(1,type,sort,ID);
 		
@@ -113,6 +134,10 @@ include("header.php");
 		});
 		
 		$('#reset-btn').click(function(){
+			var project_id = getUrlParameter('project');
+	        if(project_id){
+	            window.location.href = window.location.href.split('?')[0];
+	        }
 			$('#alert').hide();
 			$('#searchForm')[0].reset();
 			showJobs(1,type,sort,ID);

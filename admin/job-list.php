@@ -26,6 +26,7 @@ else
 
 if (!empty($_REQUEST['searchJobNo'])){	
 	$where .= " AND JobID LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchJobNo']) . "%'";
+    $where .= " OR ParentJobId LIKE '%" . $mysqli->real_escape_string($_REQUEST['searchJobNo']) . "%'";
 }
 
 if (!empty($_REQUEST['searchAddress'])){	
@@ -38,11 +39,18 @@ if(!empty($_REQUEST['projectId']))
 }
 
  
- $orderBy = "ORDER BY ProjectID ASC, JobID ASC";
+ /*$orderBy = "ORDER BY ProjectID ASC, JobID ASC";
 
  if($_REQUEST["type"] != null && $_REQUEST["sort"] != null)
  {
     $orderBy = "ORDER BY ProjectID ASC, ". $_REQUEST['type']." ".$_REQUEST['sort'] ;
+ }   */
+
+ $orderBy = "ORDER BY JobID DESC";
+
+ if($_REQUEST["type"] != null && $_REQUEST["sort"] != null)
+ {
+    $orderBy = "ORDER BY ". $_REQUEST['type']." ".$_REQUEST['sort'] ;
  }   
 
 ?>
@@ -51,7 +59,7 @@ if(!empty($_REQUEST['projectId']))
 
 	<?php
 		$query = "SELECT COUNT(JobID) FROM tblJob $where";
-
+        //echo $query;die; 
 		$result = $mysqli->query($query);
 		$row = $result->fetch_array(); 
 		$total_records = $row[0];  
@@ -73,6 +81,13 @@ if(!empty($_REQUEST['projectId']))
                         <span class="sort-icon">
                             <i class="fa fa-sort-asc" id="JobIDASC" data-name="JobID" data-sort="ASC" style="color:red;" aria-hidden="true"></i>
                             <i class="fa fa-sort-desc" id="JobIDDESC" data-name="JobID" data-sort="DESC" aria-hidden="true"></i>
+                        </span>
+                    </th>
+                    <th nowrap>
+                        Sub job No. 
+                        <span class="sort-icon">
+                            <i class="fa fa-sort-asc" id="subJobIdASC" data-name="subJobId" data-sort="ASC" style="color:red;" aria-hidden="true"></i>
+                            <i class="fa fa-sort-desc" id="subJobIdDESC" data-name="subJobId" data-sort="DESC" aria-hidden="true"></i>
                         </span>
                     </th>
                     <th>Address
@@ -106,7 +121,7 @@ if(!empty($_REQUEST['projectId']))
                 
                 <?php 
                    
-                $query = "SELECT JobID, ProjectID, JobAddress, DateEntered, DateMeasure,status FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
+                $query = "SELECT JobID,subJobId, ProjectID, JobAddress, DateEntered, DateMeasure,status FROM tblJob $where $orderBy LIMIT $start_from, $recordsperpage";
 
                 $result = $mysqli->query($query);
                 $getProjectName = '';
@@ -139,6 +154,7 @@ if(!empty($_REQUEST['projectId']))
                 ?>
                     <tr>
                         <td ><?php echo $row['JobID'] ?></td>
+                        <td ><?php echo $row['subJobId'] ?></td>
                         <td ><?php echo $row['JobAddress'] ?></td>                       
                         <td><?php echo date("d-m-Y", strtotime($row['DateEntered'])) ?></td>
                         <td>
@@ -158,7 +174,8 @@ if(!empty($_REQUEST['projectId']))
 
                         <td nowrap>   
                             <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-primary btn-xs edit-btn" data-toggle="tooltip" data-placement="top" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
-                            <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time" aria-hidden="true"></span></button>                        
+                           <!--  <button type="button" value="<?php echo $row['JobID']; ?>" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time" aria-hidden="true"></span></button>     -->
+                            <a href="../job.php?jobid=<?php echo $row['JobID']; ?>#draftsman" class="btn btn-info btn-xs history-btn" data-toggle="tooltip" data-placement="top" title="History"><span class="glyphicon glyphicon-time job-history-icon-custom" aria-hidden="true"></span></a>                        
                         </td>
                     </tr>
                     

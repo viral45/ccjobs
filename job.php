@@ -62,6 +62,7 @@
 						<li role="presentation"><a href="index.php">Home</a></li>
 						<li role="presentation"><a href="job-lookup.php">Change Job</a></li>
 						<li role="presentation"><a href="job-search.php">Search</a></li>
+						<li role="presentation"><a href="admin/jobs.php">Job</a></li>
 					</ul>
 					
 				</div>
@@ -130,7 +131,7 @@
 							<h3><?php echo  $formjobaddress ?></h3>
 							<?php echo (!empty($formbuilder) ? '<h4>'.$formbuilder.'</h4>' : ''); ?>
 							<a class="btn btn-sm btn-danger" href='<?php echo "https://www.google.com/maps?q=" . urlencode($formjobaddress); ?>' target="_blank"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> View Map</a>
-							<?php if($_SESSION['is_draftsman'] == 1){ ?><button class="btn btn-primary btn-sm ml-3">Create Sub Job</button> <?php } ?>
+							<?php if($_SESSION['is_draftsman'] == 1){ ?><button class="btn btn-primary btn-sm ml-3 create_sub_job">Create Sub Job</button> <?php } ?>
 						</div>
 					</div>
 
@@ -138,6 +139,7 @@
 						<!-- Nav tabs -->
 						<ul class="nav nav-tabs" role="tablist" id="myTab">
 							<li role="presentation"><a href="#draftsman" aria-controls="draftsman" role="tab" data-toggle="tab">Draftsman</a></li>
+							<li role="presentation"><a href="#stone" aria-controls="stone" role="tab" data-toggle="tab">Stone</a></li>
 							<!-- <li role="presentation"><a href="#cnc" aria-controls="cnc" role="tab" data-toggle="tab">CNC</a></li>
 							<li role="presentation"><a href="#edging" aria-controls="edging" role="tab" data-toggle="tab">Edging</a></li> -->
 							<li role="presentation" class="active"><a href="#assembler" aria-controls="assembler" role="tab" data-toggle="tab">Assembler</a></li>
@@ -149,6 +151,375 @@
 						<div class="tab-content">
 
 							<div role="tabpanel" class="tab-pane" id="draftsman">
+								<?php
+									if (!empty($formmeasureby))
+										echo "<strong>Assigned to:</strong> " . get_name_from_id($formmeasureby, $mysqli) . "<br>";
+
+									if (!empty($formdatemeasure))
+										echo "<strong>Measure Date:</strong> " . date("d-m-Y", strtotime($formdatemeasure)) . "<br>"; 
+								?>
+
+								<br>
+								<div class="row">
+									<div class="col-md-4">
+								<?php	
+
+									$query = "SELECT tblJobTaskDraft.TaskID, tblTask.Weight FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $formjobid";
+									$result = $mysqli->query($query);
+									$taskarray[] = "";
+									$weight = 2;
+
+									while($task = $result->fetch_array()) {
+										$taskarray[] = $task['TaskID'];
+										$weight -= $task['Weight'];
+										
+									}
+
+
+									
+									if ($weight > 0){
+								?>
+										<button class="start-draft-btn btn btn-success btn-lg" type="button" <?php if (empty($_SESSION['is_draftsman'])){echo "disabled='disabled'";}?>>Measured</button>
+
+								<?php } 
+								else {
+									
+								?>
+									<button class="materials-draft-btn btn btn-danger btn-lg" type="button" data-toggle="collapse" data-target="#materials" aria-expanded="false" aria-controls="materials">Materials</button>
+								<?php 
+								}
+								?>
+								
+								<btn class="btn btn-lg btn-info plans-btn">Plans</btn>
+					
+								<a href="index.php" class="btn btn-warning btn-lg">Home</a>
+								
+								</div>
+								<?php
+									//$remove_null = array_filter($taskarray, fn($value) => !is_null($value) && $value !== '');
+									$remove_null = array_filter( $taskarray );
+
+									$taskarray_data = implode(',', $remove_null); 
+
+									if($taskarray_data != null)
+									{
+
+										$taskData_query = "SELECT tblTask.*, tblUser.FullName  FROM tblTask LEFT JOIN tblUser ON tblTask.user_id = tblUser.UserID WHERE TaskID NOT IN ($taskarray_data) And TaskID != 1";
+									}
+									else
+									{
+										$taskData_query = "SELECT tblTask.*, tblUser.FullName  FROM tblTask LEFT JOIN tblUser ON tblTask.user_id = tblUser.UserID WHERE TaskID != 1";
+									}
+									$task_result = mysqli_query($mysqli, $taskData_query);
+									if($task_result != null)
+									{
+										$task_result_list = mysqli_num_rows($task_result) ;
+									}
+									else
+									{
+										$task_result_list = -1;
+									}
+
+									if($task_result_list > 0){
+
+								?>
+									
+									<!-- <div class="col-md-3">
+										<div class="form-group err_roomList">
+											<label>Room Type</label>
+										  <select class="form-control" id="roomList">
+										  	 <option value="">select</option>
+										    <?php
+
+											    while($row = mysqli_fetch_assoc($task_result)) 
+											    {
+											    	
+											    	echo '<option value="'.$row['TaskID'].'">'.$row['TaskName'].' - '.$row['FullName'].'</option>';
+											    }
+										    ?>
+										  </select>
+										</div>
+									</div>
+									<div class="col-md-1">
+										<btn class="btn btn-lg btn-primary create-room">Create New Room Type</btn>
+									</div> -->
+									<?php } ?>
+									<div class="col-md-2">
+										<btn class="btn btn-lg btn-success " aria-hidden="true" data-toggle="modal" data-target="#newRoom" >Add Room</btn>
+										
+									</div>
+									<?php
+
+									$query = "SELECT tblJobTaskDraft.*, tblTask.TaskName FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $jobid ORDER BY tblJobTaskDraft.TaskID";
+									$result = $mysqli->query($query);
+
+									$signOff = 0;
+									while($get_is_off = $result->fetch_array()) {
+										
+										if($get_is_off['is_off'] == 0)
+										{
+											$signOff = 1;
+										}
+									}
+
+
+									if ($_SESSION['is_JobApprove'] == 1 && $signOff == 1){ ?>
+
+									<div class="col-md-2">
+										<btn class="btn btn-lg btn-info sing-off-all-btn text-right" >Sign Off All</btn>
+									</div>
+									<div class="col-md-1">
+										<btn class="btn btn-lg btn-info sing-off-alert-btn text-right " >Sign Off Alert All</btn>
+									</div>
+									
+								<?php } ?>
+
+								</div>
+								<br><br>
+								<div class="collapse" id="materials">
+									<div class="well">
+										<form id='materials-form' class="materials-form form-horizontal" action='#' method='post'>
+											<fieldset <?php if ($_SESSION['is_draftsman'] <> 1) { echo "disabled='disabled'";} ?>>
+												<input type="hidden" id="jobid" name="jobid" value="<?php if (isset($jobid)) { echo $jobid; } ?>">
+												<input type="hidden" id="action" name="action" value="savematerials">
+
+												<?php 
+													//check carcass record exists
+													$materialquery = "SELECT JobMaterialID FROM tblJobMaterial WHERE JobID = $jobid AND IsCarcass <> 0";
+													$materialresult = $mysqli->query($materialquery);
+
+													if ($materialresult->num_rows == 0){
+														//insert carcass record
+														$boarddescription = "CARCASS";
+														$boardtype = "WHITE16MEL";
+														$iscarcass = 1;
+
+														$insert_stmt = $mysqli->prepare("INSERT INTO tblJobMaterial (JobID, BoardDescription, BoardType, IsCarcass) VALUES (?, ?, ?, ?)");
+														$insert_stmt->bind_param('issi', $jobid, $boarddescription, $boardtype, $iscarcass); 
+														$insert_stmt->execute();
+													}
+
+													$materialquery = "SELECT JobMaterialID, JobID, BoardDescription, BoardType, BoardQuantity, IsCarcass FROM tblJobMaterial WHERE JobID = $jobid ORDER BY IsCarcass DESC, JobMaterialID ";
+													$materialresult = $mysqli->query($materialquery);
+													
+													$hideheadings = $materialresult->num_rows == 0 ? "style='display:none;'" : "";
+												?>
+
+														<div id="tableheadings" class="form-group gutter-10" <?php echo $hideheadings; ?>>
+															<div class="col-xs-4">
+																<strong>Description / Colour</strong>
+															</div>
+															<div class="col-xs-4">
+																<strong>Board Type</strong>
+															</div>
+															<div class="col-xs-3">
+																<strong>Quantity</strong>
+															</div>
+															<div class="col-xs-1">
+															</div>
+														</div>
+
+												<?php 
+													$count = 0;
+														while($materialrow = $materialresult->fetch_array()){
+														?>
+															<div class="form-group itemrow gutter-10">
+																<div class="col-xs-4">
+																	<input type="hidden" id="inputJobMaterialID[]" name="inputJobMaterialID[]" value="<?php echo $materialrow['JobMaterialID']; ?>">
+																	<input type="hidden" id="inputMaterialDelete[]" name="inputMaterialDelete[]" value="0">
+																	<input type="text" class="form-control" id="inputBoardDescription[<?php echo $count; ?>]" name="inputBoardDescription[<?php echo $count; ?>]" placeholder="Colour" required value="<?php echo $materialrow['BoardDescription']; ?>" <?php if ($materialrow['IsCarcass']<>0){echo "readonly='readonly'";} ?>>
+																</div>
+																<div class="col-xs-4">
+																	<?php if ($materialrow['IsCarcass']<>0){ ?>
+																		<input type="text" class="form-control" id="inputBoardType[<?php echo $count; ?>]" name="inputBoardType[<?php echo $count; ?>]" placeholder="Board Type" required value="<?php echo $materialrow['BoardType']; ?>" readonly='readonly'>
+																	<?php } else { ?>
+																		<select id="inputBoardType[<?php echo $count; ?>]" name="inputBoardType[<?php echo $count; ?>]" class="form-control" required>
+																			<option value="">Please Select</option>
+																			<?php
+																				$boardquery = "SELECT BoardType FROM tblBoardType ORDER BY BoardType";
+																				$boardresult = $mysqli->query($boardquery);			
+
+																				while($boardrow = $boardresult->fetch_array())
+																				{	
+																					if (isset($materialrow['BoardType']))
+																						$selected = ($boardrow['BoardType'] == $materialrow['BoardType']) ? " SELECTED" : ""; 	
+																					else
+																						$selected = "";
+
+																					echo "<option value='" . $boardrow['BoardType'] . "' $selected>" . $boardrow['BoardType'] . "</option>";
+																				}
+																			?>
+																		</select>		
+																	<?php } ?>
+																															
+																</div>
+																<div class="col-xs-3">
+																	<input type="text" class="form-control" id="inputBoardQuantity[<?php echo $count; ?>]" name="inputBoardQuantity[<?php echo $count; ?>]" placeholder="Quantity" digits="true" required value="<?php echo $materialrow['BoardQuantity']; ?>">
+																</div>
+																<div class="col-xs-1">
+																	<button type="button" class="btn btn-default removeItemButton" <?php if ($materialrow['IsCarcass']<>0){echo "disabled='disabled'";} ?>><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+																</div>
+															</div>
+
+														<?php
+															$count++;
+														}
+												
+												?>
+
+												<div class="form-group hide gutter-10" id="itemTemplate">
+													<div class="col-xs-4">
+														<input type="hidden" id="inputMaterialCancelAdd[]" name="inputMaterialCancelAdd[]" value="1">
+														<input type="text" class="form-control" id="inputBoardDescriptionAdd[]" name="inputBoardDescriptionAdd[]" placeholder="Colour" required>
+													</div>
+													<div class="col-xs-4">
+														<select id="inputBoardTypeAdd[]" name="inputBoardTypeAdd[]" class="form-control" required>
+															<option value="">Please Select</option>
+															<?php
+																$boardquery = "SELECT BoardType FROM tblBoardType ORDER BY BoardType";
+																$boardresult = $mysqli->query($boardquery);			
+
+																while($boardrow = $boardresult->fetch_array())
+																{	
+																	echo "<option value='" . $boardrow['BoardType'] . "'>" . $boardrow['BoardType'] . "</option>";
+																}
+															?>
+														</select>													
+													</div>
+													<div class="col-xs-3">
+														<input type="text" class="form-control" id="inputBoardQuantityAdd[]" name="inputBoardQuantityAdd[]" placeholder="Quantity" required>
+													</div>
+													<div class="col-xs-1">
+														<button type="button" class="btn btn-default removeItemButton"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+													</div>
+												</div>
+												
+												<div class="form-group gutter-10">
+													<div class="col-sm-12">
+														<button type="button" class="btn btn-default addItemButton">Add Row</button>
+														<button type="submit" id="save-btn" class="btn btn-primary">Save &amp; Transfer</button>
+													</div>
+												</div>
+												
+											</fieldset>
+										</form>
+									</div>
+								</div>
+
+
+								<?php 
+									$query = "SELECT tblJobTaskDraft.*, tblTask.TaskName FROM tblJobTaskDraft INNER JOIN tblTask ON tblJobTaskDraft.TaskID = tblTask.TaskID WHERE tblJobTaskDraft.JobID = $jobid ORDER BY tblJobTaskDraft.TaskID";
+									$result = $mysqli->query($query);
+
+									while($row = $result->fetch_array()){
+								?>
+									<div class="panel panel-default">
+										<div class="panel-body">
+											<h2><?php echo $row['TaskName'] ?></h2>
+											<div class="row">
+												<div class="col-sm-4">
+													<div class="alert alert-warning" role="alert">
+														<div class="row">
+															<div class="col-xs-3"><i class="fa fa-clock-o fa-5x text-warning"></i></div>
+															<div class="col-xs-9" style="vertical-align: middle;"><?php echo "<strong>Measured</strong><br>" . date('d-m-Y', strtotime($row['DateStarted'])) . "<br>by " . get_name_from_id($row['StartedBy'], $mysqli) ?></div>
+														</div>
+													</div>
+												</div>
+												<?php 
+													if (!empty($row['DateDrawn'])){
+												?>
+														<div class='col-sm-4'>
+															<div class='alert alert-info' role='alert'>
+																<div class="row">
+																	<div class="col-xs-3"><i class="fa fa-list-ol fa-5x text-info"></i></div>
+																	<div class="col-xs-9" style="vertical-align: middle;"><?php echo "<strong>Drawing Started</strong><br>" . date('d-m-Y', strtotime($row['DateDrawn'])) . "<br>by " . get_name_from_id($row['DrawnBy'], $mysqli) ?></div>
+																</div>
+															</div>
+														</div>
+												<?php } ?>
+
+												<?php 
+													if (!empty($row['DateCompleted'])){
+												?>
+														<div class='col-sm-4'>
+															<div class='alert alert-success' role='alert'>
+																<div class="row">
+																	<div class="col-xs-3"><i class="fa fa-check-square-o fa-5x text-success"></i></div>
+																	<div class="col-xs-9" style="vertical-align: middle;"><?php echo "<strong>Sent To CNC</strong><br>" . date('d-m-Y', strtotime($row['DateCompleted'])) . "<br>by " . get_name_from_id($row['CompletedBy'], $mysqli) ?></div>
+																</div>
+															</div>
+														</div>
+												<?php } ?>
+											</div>
+
+											<?php 	
+												$missingitems = jobtaskdraft_missing_items($row['JobID'], $row['TaskID'], $mysqli);
+
+												if ($missingitems == true)
+													echo '<span class="fa fa-warning fa-4x text-danger" style="vertical-align: middle;"></span><span><strong>Contains missing items!</strong></span><br><br>';
+											?>
+																							
+													<button class="btn btn-primary btn-lg" type="button" data-toggle="collapse" data-target="#checklistdraft<?php echo $row['TaskID']?>" aria-expanded="false" aria-controls="checklist<?php echo $row['TaskID']?>">Notes &amp; Checklist</button>
+											
+											<?php
+													if ($_SESSION['is_draftsman'] <> 0 && empty($row['DateDrawn']) && empty($row['DateCompleted'])){
+											?>
+														<button class="drawn-draft-btn btn btn-success btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Start Drawing</button>
+											<?php } ?>
+
+											<?php
+													if ($_SESSION['is_draftsman'] <> 0 && $missingitems == false && !empty($row['DateDrawn']) && empty($row['DateCompleted'])){
+											?>
+														<button class="complete-draft-btn btn btn-success btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sent To CNC</button>
+											<?php } ?>
+
+											<?php
+													if ($_SESSION['is_JobApprove'] == 1 && $row['is_off'] == 0 && empty($row['DateCompleted'])){
+											?>
+														<button class="sing-off-btn btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sign Off</button>
+														<button class="sing-off-btn-alert btn btn-warning btn-lg" type="button" value='<?php echo $row['TaskID'] ?>'>Sign Off Alert</button>
+											<?php } ?>	
+											<?php
+													if ($_SESSION['is_JobApprove'] == 1){
+											?>
+														<button class="delete-room-btn btn btn-danger btn-lg" type="button" data-id="<?php echo $_SESSION['user_id'] ?>" value='<?php echo $row['TaskID'] ?>'>Delete</button>
+											<?php } ?>	
+											<br><br>
+											<div class="collapse" id="checklistdraft<?php echo $row['TaskID']?>">
+												<div class="well">
+													<form id='checklist-draft-form' class="checklist-draft-form" action='#' method='post'>
+														<fieldset <?php if ($_SESSION['is_draftsman'] <> 1 || !empty($row['DateCompleted'])) { echo "disabled='disabled'";} ?>>
+															<input type="hidden" id="jobid" name="jobid" value="<?php if (isset($row['JobID'])) { echo $row['JobID']; } ?>">
+															<input type="hidden" id="taskid" name="taskid" value="<?php if (isset($row['TaskID'])) { echo $row['TaskID']; } ?>">
+															<input type="hidden" id="action" name="action" value="savechecklist">
+															
+															<div class="form-group">
+																<label for="inputNotes">Measure Notes</label>
+																<textarea class="form-control" id="inputNotes" name="inputNotes" rows="6"><?php if (isset($row['Notes'])) { echo htmlspecialchars($row['Notes'], ENT_QUOTES); } ?></textarea>
+															</div>																																									
+															<!-- <div class="form-group">
+																<label for="inputMissingItems">Missing Items</label>
+																<textarea class="form-control" id="inputMissingItems" name="inputMissingItems" rows="6"><?php if (isset($row['MissingItems'])) { echo htmlspecialchars($row['MissingItems'], ENT_QUOTES); } ?></textarea>
+															</div>
+															<div class="form-group">
+																<label>
+																	<input name="inputMissingItemsComplete" type="checkbox" value="1" <?php if (isset($row['MissingItemsComplete'])) { if ($row['MissingItemsComplete']==1){ echo " CHECKED"; } } ?>> All missing items completed
+																</label>
+															</div> -->
+															
+															<button type="submit" id="save-btn" class="btn btn-primary">Save</button>
+														</fieldset>
+													</form>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								<?php
+									}
+								?>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="stone">
 								<?php
 									if (!empty($formmeasureby))
 										echo "<strong>Assigned to:</strong> " . get_name_from_id($formmeasureby, $mysqli) . "<br>";
@@ -1008,7 +1379,7 @@
 																	<input type="hidden" id="taskid" name="taskid" value="<?php if (isset($row['TaskID'])) { echo $row['TaskID']; } ?>">
 																	<input type="hidden" id="action" name="action" value="savechecklist">
 																	
-																	<p>Tick boxes if "yes" or "not applicable"</p>
+																	<!-- <p>Tick boxes if "yes" or "not applicable"</p>
 																	<div class="form-group">
 																		<label>
 																			<input name="inputGapped" type="checkbox" value="1" required <?php if (isset($row['Gapped'])) { if ($row['Gapped']==1){ echo " CHECKED"; } } ?>> Gapped
@@ -1048,6 +1419,10 @@
 																		<label>
 																			<input name="inputCabinetsCleaned" type="checkbox" value="1" required <?php if (isset($row['CabinetsCleaned'])) { if ($row['CabinetsCleaned']==1){ echo " CHECKED"; } } ?>> Cabinets all cleaned
 																		</label>
+																	</div> -->
+																	<div class="form-group">
+																		<label for="inputMissingItems">ToDo Items</label>
+																		<textarea class="form-control" id="inputApplicableItems" name="inputApplicableItems" rows="6"><?php if (isset($row['Applicabletems'])) { echo htmlspecialchars($row['Applicabletems'], ENT_QUOTES); } ?></textarea>
 																	</div>																																																									
 																	<div class="form-group">
 																		<label for="inputMissingItems">Missing Items</label>
@@ -1938,6 +2313,27 @@
                 }
             }
         });
+
+// Code by Kiran on 24th February 2022
+
+
+	$(document).on('click', '.create_sub_job', function(){ 
+		var jobid = $('#jobid').val();
+		$.confirm({
+			text: "Are you sure you want to create new sub job?",
+			confirm: function() {
+				$.post("job-draft-crud.php", { action: 'CreateSubJob', jobid: jobid}) 
+				.done(function(data){
+					var response = jQuery.parseJSON(data);
+					location.reload();
+				});
+			},
+			cancel: function() {
+				// nothing to do
+			}
+		});
+	});
+// Code by Kiran on 24th February 2022
 
 	</script>
 

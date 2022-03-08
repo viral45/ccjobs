@@ -202,3 +202,21 @@ input[readonly] {
     margin-left: 70%;
   }
 }
+
+
+.fa-sort-desc{
+	font-size: 20px !important;
+	cursor: pointer;
+	height: 0;
+}
+
+.fa-sort-asc{
+	font-size: 20px !important;
+	cursor: pointer;
+	height: 5px;
+}
+
+.sort-icon{
+	display: inline-grid;
+	margin-left: 5px;
+}
