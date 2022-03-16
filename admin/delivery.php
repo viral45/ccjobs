@@ -18,8 +18,8 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Delivery Schedule</span>
-      <button type="button" id="delivery-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Staff Add</button>
-      <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
+      <button type="button" id="delivery-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Task</button>
+      <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Job</button>
     </h1>
 </div>
 

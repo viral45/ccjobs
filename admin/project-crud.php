@@ -29,8 +29,20 @@ if (isset($_POST['action'])){
 
 			foreach($level as $key=>$value)
 			{
-				$insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($insert_stmt->insert_id,'$value','$unit_per_level[$key]')";
-				$mysqli->query($insert_stmt_level);
+				/*$insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($insert_stmt->insert_id,'$value','$unit_per_level[$key]')";
+				$mysqli->query($insert_stmt_level);*/
+
+
+				for ($i=0; $i <=$unit_per_level[$key] ; $i++) { 
+					
+					$ProjectID = $insert_stmt->insert_id;
+					$dateentered = date("Y-m-d H:i:s");
+					$address = $prefix.' - '.$value."".$i;
+
+					$insert_stmt_job = $mysqli->prepare("INSERT INTO tblJob (ProjectID, JobAddress, DateEntered) VALUES (?, ?, ?)");
+					$insert_stmt_job->bind_param('iss', $ProjectID, $address, $dateentered); 
+					$insert_stmt_job->execute();	
+				}
 				
 			}
 
@@ -61,7 +73,7 @@ if (isset($_POST['action'])){
 		$prefix = $_POST['inputprojectPrefix'];
 		$level = $_POST['Level'];
 		$unit_per_level = $_POST['unit_per_level'];
-		$projectLevelId = $_POST['projectLevelId'];
+		//$projectLevelId = $_POST['projectLevelId'];
 
 
 		$update_stmt = $mysqli->prepare("UPDATE tblproject SET ProjectName = ?, JobNumber = ?,Prefix = ?, Discription = ? WHERE ProjectID = ?"); 
@@ -72,7 +84,7 @@ if (isset($_POST['action'])){
 
 			foreach($level as $key=>$value)
 			{
-				 if(isset($_POST['projectLevelId']))
+				/*if(isset($_POST['projectLevelId']))
 			    {
 			        if($projectLevelId[$key] != '')
     				{
@@ -92,7 +104,18 @@ if (isset($_POST['action'])){
 			        
 			        $insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($projectid,'$value','$unit_per_level[$key]')";
     					$mysqli->query($insert_stmt_level);
-			    }
+			    }*/
+
+				for ($i=0; $i <=$unit_per_level[$key] ; $i++) { 
+					
+					$ProjectID = $projectid;
+					$dateentered = date("Y-m-d H:i:s");
+					$address = $prefix.' - '.$value."".$i;
+
+					$insert_stmt_job = $mysqli->prepare("INSERT INTO tblJob (ProjectID, JobAddress, DateEntered) VALUES (?, ?, ?)");
+					$insert_stmt_job->bind_param('iss', $ProjectID, $address, $dateentered); 
+					$insert_stmt_job->execute();	
+				}
 				
 			}
 

@@ -18,8 +18,8 @@ include("header.php");
 <div class="page-header">
     <h1>
       <span id="pageTitle">Schedule</span>
-      <button type="button" id="schedule-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Staff Add</button>
-      <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New</button>
+      <button type="button" id="schedule-staff-add" class="btn btn-primary pull-right" style="margin-left: 1%;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Task</button>
+      <button type="button" id="add-btn" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Job</button>
     </h1>
     <!-- <ul>
     <li>Show Which Schedule is being viewed e.g. Installer Schedule</li>
