@@ -15,19 +15,27 @@ if (isset($_POST['action'])){
 		
 		$name = $_POST['inputprojectName'];
 		$discription = $_POST['inputprojectDiscription'];
-		$jobNumber = $_POST['inputprojectJobNumber'];
 		$prefix = $_POST['inputprojectPrefix'];
+		$level = $_POST['Level'];
+		$unit_per_level = $_POST['unit_per_level'];
 		$dateentered = date("Y-m-d H:i:s");
 
 		$insert_stmt = $mysqli->prepare("INSERT INTO tblproject (ProjectName,Discription,JobNumber,Prefix,DateEntered) VALUES (?,?,?,?,?)");
 		$insert_stmt->bind_param('ssiss', $name,$discription,$jobNumber,$prefix,$dateentered); 
 		$insert_stmt->execute();
+
 				
 		if ($insert_stmt->affected_rows != -1){
 
+			foreach($level as $key=>$value)
+			{
+				$insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($insert_stmt->insert_id,'$value','$unit_per_level[$key]')";
+				$mysqli->query($insert_stmt_level);
+				
+			}
 
-			$query = "UPDATE tblJob SET ProjectID = $insert_stmt->insert_id WHERE JobID = $jobNumber";
-			$mysqli->query($query);
+			/*$query = "UPDATE tblJob SET ProjectID = $insert_stmt->insert_id WHERE JobID = $jobNumber";
+			$mysqli->query($query);*/
 
 			$data['msg'] = "<div class='alert alert-success' role='alert'>The project was added successfully.</div>";
 			$data['last_insert_id'] = $insert_stmt->insert_id;
@@ -50,8 +58,10 @@ if (isset($_POST['action'])){
 		$projectid = $_POST['projectid'];
 		$name = $_POST['inputprojectName'];
 		$discription = $_POST['inputprojectDiscription'];
-		$jobNumber = $_POST['inputprojectJobNumber'];
 		$prefix = $_POST['inputprojectPrefix'];
+		$level = $_POST['Level'];
+		$unit_per_level = $_POST['unit_per_level'];
+		$projectLevelId = $_POST['projectLevelId'];
 
 
 		$update_stmt = $mysqli->prepare("UPDATE tblproject SET ProjectName = ?, JobNumber = ?,Prefix = ?, Discription = ? WHERE ProjectID = ?"); 
@@ -59,8 +69,35 @@ if (isset($_POST['action'])){
 		$update_stmt->execute();
 		
 		if ($update_stmt->affected_rows != -1){
-			$query = "UPDATE tblJob SET ProjectID = $projectid WHERE JobID = $jobNumber";
-			$mysqli->query($query);
+
+			foreach($level as $key=>$value)
+			{
+				 if(isset($_POST['projectLevelId']))
+			    {
+			        if($projectLevelId[$key] != '')
+    				{
+    					
+    					$query = "UPDATE tblprojectlevel SET level = '$value', unit_per_level = '$unit_per_level[$key]'  WHERE id = $projectLevelId[$key]";
+    					$mysqli->query($query);
+    				}
+    				else
+    				{
+    					
+    					$insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($projectid,'$value','$unit_per_level[$key]')";
+    					$mysqli->query($insert_stmt_level);
+    				}    
+			    }
+			    else
+			    {
+			        
+			        $insert_stmt_level = "INSERT INTO tblprojectlevel (projectId,level,unit_per_level) VALUES ($projectid,'$value','$unit_per_level[$key]')";
+    					$mysqli->query($insert_stmt_level);
+			    }
+				
+			}
+
+			/*$query = "UPDATE tblJob SET ProjectID = $projectid WHERE JobID = $jobNumber";
+			$mysqli->query($query);*/
 
 			$data['msg'] = "<div class='alert alert-success' role='alert'>The Project was updated successfully.</div>";
 			$data['last_insert_id'] = $projectid;

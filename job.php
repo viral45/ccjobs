@@ -39,6 +39,7 @@
     <title>Challenge Cabinets Job Management System</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/theme.css" rel="stylesheet">
     <link href="css/style.css?v=1.1" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -50,7 +51,12 @@
   </head>
 
   <body>
-
+  	<?php
+  	
+  		if(isset($_SESSION['logged_in'])){
+  			include("header.php");
+  		} 
+  	?>
     <div class="container">
 			<div class="row">
 				<div class="col-xs-6 col-sm-4 col-md-3">

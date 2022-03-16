@@ -138,6 +138,23 @@ include("header.php");
             $('#alert').hide();
             addEditProject("edit", $(this).val());
         });
+        $(document).on('click', '#AddLevel', function(){ 
+            var store_ap = "";
+            store_ap += '<div class="col-md-5">';
+            store_ap += '<div class="form-group">';
+                store_ap += '<label for="inputprojectName">Level</label>';
+                store_ap += '<input type="text" class="form-control" id="Level" name="Level[]" placeholder="Level" value="">';
+            store_ap += '</div>';
+            store_ap += '</div>';
+            store_ap += '<div class="col-md-5">';
+                store_ap += '<div class="form-group">';
+                    store_ap += '<label for="inputprojectName">Unit per level </label>';
+                    store_ap += '<input type="number" class="form-control" id="unit_per_level" name="unit_per_level[]" placeholder="Unit per level" value="">';
+                store_ap += '</div>';
+            store_ap += '</div>';
+
+            $('#ap_level').append(store_ap);
+        });
         
         function deleteProject(deleteid){
             $.confirm({

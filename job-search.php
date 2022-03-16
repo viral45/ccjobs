@@ -39,7 +39,12 @@
   </head>
 
   <body>
-
+  	<?php
+  	
+  		if(isset($_SESSION['logged_in'])){
+  			include("header.php");
+  		} 
+  	?>
     <div class="container">
 		<div class="row">
 			<div class="col-xs-9 col-sm-3">

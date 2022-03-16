@@ -28,6 +28,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/theme.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -38,7 +39,12 @@
   </head>
 
   <body>
-
+  	<?php
+  	
+  		if(isset($_SESSION['logged_in'])){
+  			include("header.php");
+  		} 
+  	?>
     <div class="container">
 		<div class="row">
 			<div class="col-xs-9 col-sm-3">

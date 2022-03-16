@@ -38,9 +38,70 @@ if (isset($_POST['action']))
         <textarea class="form-control" rows="5" id="inputprojectDiscription" name="inputprojectDiscription" placeholder="Discription"><?php if (isset($formprojectDiscription)) { echo htmlspecialchars($formprojectDiscription, ENT_QUOTES); } ?></textarea>
     </div>
 
-    <div class="form-group">
-        <label for="inputprojectName">Job Number</label>
-        <input type="number" class="form-control" id="inputprojectJobNumber" name="inputprojectJobNumber" placeholder="job Number" value="">
+    <div class="row" id="ap_level">
+    	<?php
+    	
+
+
+    		$query = "select * from tblprojectlevel where projectId = ".$_POST['projectid'];
+    		$result = $mysqli->query($query);
+
+    		if($result != null)
+			{
+				$task_result_list = mysqli_num_rows($result) ;
+			}
+			else
+			{
+				$task_result_list = 0;
+			}
+
+			if ($task_result_list == 0)
+	    	{
+	    		?>
+	    			<div class="col-md-5">
+					    <div class="form-group">
+					        <label for="inputprojectName">Level</label>
+					        <input type="text" class="form-control" id="Level" name="Level[]" placeholder="Level" value="">
+					    </div>
+			    	</div>
+			    	<div class="col-md-5">
+					    <div class="form-group">
+					        <label for="inputprojectName">Unit per level </label>
+					        <input type="number" class="form-control" id="unit_per_level" name="unit_per_level[]" placeholder="Unit per level" value="">
+					    </div>
+			    	</div>
+			    	
+			    	<div class="col-md-2">
+			    		<button type="button" class="btn btn-info" id="AddLevel">Add Level</button>
+			    	</div>
+	    		<?php
+	    	}
+	    	else
+	    	{
+    		 $i = 0;
+    		while($row = $result->fetch_array())
+			{	
+				$i++;
+
+    	?>
+    	<div class="col-md-5">
+    		<input type="hidden" name="projectLevelId[]" value="<?php echo $row['id']; ?>">
+		    <div class="form-group">
+		        <label for="inputprojectName">Level</label>
+		        <input type="text" class="form-control" id="Level" name="Level[]" placeholder="Level" value="<?php echo $row['level']; ?>">
+		    </div>
+    	</div>
+    	<div class="col-md-5">
+		    <div class="form-group">
+		        <label for="inputprojectName">Unit per level </label>
+		        <input type="number" class="form-control" id="unit_per_level" name="unit_per_level[]" placeholder="Unit per level" value="<?php echo $row['unit_per_level'] ?>">
+		    </div>
+    	</div>
+    	<?php if($i == 1) { ?>
+    	<div class="col-md-2">
+    		<button type="button" class="btn btn-info" id="AddLevel">Add Level</button>
+    	</div>
+    <?php } } } ?>	
     </div>
     <div class="form-group">
         <label for="inputprojectName">Prefix</label>

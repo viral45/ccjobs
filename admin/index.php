@@ -8,26 +8,62 @@ if(!isset($_SESSION['logged_in'])){
 }
 
 include("config.php"); 
-
 $page = "welcome";
-
 include("header.php"); 
+$data = "SELECT tblJobTask.*,tblUser.FullName FROM tblJobTask INNER JOIN tblUser ON tblUser.UserID = tblJobTask.StartedBy WHERE tblJobTask.MissingItemsComplete = 0 AND tblJobTask.MissingItems != '' AND tblJobTask.MissingItems IS NOT NULL ";
+$result = $mysqli->query($data);
 
 ?>
 
-<div class="page-header">
-<h1>Job Management System</h1>
-</div>
+	<div class="page-header">
+		<h1>Job Management System</h1>
+	</div>
 
+		<?php
+			$count = 0;
+			while($row = $result->fetch_array())
+			{
+		?>	
+				<div class="row">
 
-<!-- <a style="margin-top: 2%;" href="jobs.php" class="btn btn-primary"><span class="glyphicon glyphicon-wrench" style="font-size: 120px; "></span><br>Jobs</a>
-<a style="margin-top: 2%;" href="schedule.php" class="btn btn-info"><span class="glyphicon glyphicon-calendar" style="font-size: 120px; "></span><br>Schedule</a>
-<a style="margin-top: 2%;" href="delivery.php" class="btn btn-primary"><span class="glyphicon glyphicon-road" style="font-size: 120px; "></span><br>Delivery</a>
-<a style="margin-top: 2%;" href="reports-assemblers.php" class="btn btn-info"><span class="glyphicon glyphicon-list-alt" style="font-size: 120px; "></span><br>Reports</a>
-<a style="margin-top: 2%;" href="users.php" class="btn btn-primary"><span class="glyphicon glyphicon-user" style="font-size: 120px; "></span><br>Users</a>
-<a style="margin-top: 2%;" href="admin_users.php" class="btn btn-info"><span class="glyphicon glyphicon-cog" style="font-size: 120px; "></span><br>Admin Users</a>
-<a style="margin-top: 2%;" href="logout.php" class="btn btn-primary"><span class="glyphicon glyphicon-log-out" style="font-size: 120px; "></span><br>Log Out</a> -->
+				<?php
+					if($count == 0){
+						
+				?>
+					<div class="span6 tbl_jms"> 
+						<div class="section_title">
+							Missing Parts & Work
+						</div>
+					</div>
+					<div class="span6 tbl_jms"> 
+						<div class="section_title">
+							User - Active
+						</div>
+					</div>
+			
+				<?php
+					}	
+				?>
 
-
+					<div class="span6 tbl_jms">
+						<p class="tbl_jms_id"><a href="../job.php?jobid=<?php echo $row['JobID']; ?>#draftsman">Job# |<?php echo $row['JobID']; ?></a></p>
+						<p class="tbl_jms_missingitems"><?php echo $row['MissingItems']; ?></p>
+					</div>
+					<div class="span6 tbl_jms">
+						<p class="job_user">User# |  <?php echo $row['StartedBy']; ?>  <?php echo $row['FullName']; ?></p>
+						<div class="job_action_btn">
+							<a href="../my-jobs.php" type="button" class="btn btn-success">Jobs</a>
+							<a href="../drawer-schedule.php" type="button" class="btn btn-success">Schedule</a>
+							<a href="../installer-missing.php" type="button" class="btn btn-success">Missing</a>
+							<a href="#" type="button" class="btn btn-success">Edit</a>
+						</div>
+					</div>
+				</div>
+			
+		<?php 
+			$count++;
+			}
+		?>
+		
 
 <?php include("footer.php"); ?>

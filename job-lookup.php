@@ -51,6 +51,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/theme.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -60,7 +61,12 @@
   </head>
 
   <body>
-
+  	<?php
+  	
+  		if(isset($_SESSION['logged_in'])){
+  			include("header.php");
+  		} 
+  	?>
     <div class="container">
 
       <form class="form-keypad" method="post" action="job-lookup.php">
