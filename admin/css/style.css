@@ -207,7 +207,7 @@ h1 .pageTitle{
 }
 .tbl_jms_id {
     font-weight: bold !important;
-    padding: 10px 15px 5px 0px;
+    padding: 14px 15px 5px 0px;
 }
 .tbl_jms_missingitems{
 	padding: 10px 15px 5px 0px;
@@ -224,4 +224,9 @@ h1 .pageTitle{
     max-width: 200px;
     font-weight: bold;
     box-shadow: 6px 5px 4px rgb(0 0 0 / 5%);
+}
+
+.tbl_jms.tbl_jms_users {
+    padding-top: 5px;
+    font-weight: 600;
 }
